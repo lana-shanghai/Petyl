@@ -15,7 +15,7 @@ This is a naming convertion from both ERC20 and ERC777 which is used to distingu
 
 Transfer with data 
 ==================
-Certain use cases need addional data to be transfered along with token operations. We have included the transferWithData() function to support additional functionality bothin the sending and receiving of tokens. 
+Certain use cases need addional data to be transfered along with token operations. We have included the transferWithData() function to support additional functionality both in sending and receiving tokens. 
 
 Operators
 =========

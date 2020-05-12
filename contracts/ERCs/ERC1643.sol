@@ -33,8 +33,9 @@ contract ERC1643 is IERC1643 {
      * @param _uri Off-chain uri of the document from where it is accessible to investors/advisors to read.
      * @param _documentHash hash (of the contents) of the document.
      */
-     // AG: Replace onlyOwner
-    function setDocument(bytes32 _name, string calldata _uri, bytes32 _documentHash) override external /*onlyOwner*/ {
+      // AG: Replace permissioning
+    function setDocument(bytes32 _name, string calldata _uri, bytes32 _documentHash) override external {
+        // require(isOwner());
         require(_name != bytes32(0), "Zero value is not allowed");
         require(bytes(_uri).length > 0, "Should not be a empty uri");
         if (_documents[_name].lastModified == uint256(0)) {
@@ -50,9 +51,10 @@ contract ERC1643 is IERC1643 {
      * @dev Can only be executed by the owner of the contract.
      * @param _name Name of the document. It should be unique always
      */
-         // AG: Replace onlyOwner
+         // AG: Replace permissioning
 
-    function removeDocument(bytes32 _name) override external /* onlyOwner  */{
+    function removeDocument(bytes32 _name) override external {
+        // require(isOwner());
         require(_documents[_name].lastModified != uint256(0), "ERC1643: Document should exist");
         uint256 index = _docIndexes[_name] - 1;
         if (index != _docNames.length - 1) {

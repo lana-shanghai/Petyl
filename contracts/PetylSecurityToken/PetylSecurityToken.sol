@@ -35,10 +35,11 @@ import "../../interfaces/IERC777.sol";
 import "../../interfaces/IPetylContract.sol";
 import "../Misc/SafeMath.sol";
 import "../Misc/CloneFactory.sol";
-
+import "../ERCs/ERC1643.sol";
+// import "../ERCs/ERC1644.sol";
 
 // Petyl Security Token
-contract PetylSecurityToken is IPetylContract, ERC1400, CloneFactory {
+contract PetylSecurityToken is IPetylContract, ERC1400,  CloneFactory {
 
     using SafeMath for uint;
 
@@ -65,7 +66,8 @@ contract PetylSecurityToken is IPetylContract, ERC1400, CloneFactory {
         // add to totalSupplyHistory { block.number, baseToken.totalSupply(); }
     }
     
-    function setBaseTokenTemplate(address _baseToken) public onlyOwner {
+    function setBaseTokenTemplate(address _baseToken) public  {
+        require(isOwner());
         baseTokenTemplate = _baseToken;
 
     }
@@ -80,9 +82,9 @@ contract PetylSecurityToken is IPetylContract, ERC1400, CloneFactory {
 
     function addNewConversion(bytes32 _from, bytes32 _to, address _convertAddress)
         public
-        onlyOwner
         returns (bool success)
     {
+        require(isOwner());
         require(_convertAddress != address(0));
         require(partitionAddress[_from] != address(0));
         require(partitionAddress[_to] != address(0));
@@ -96,7 +98,8 @@ contract PetylSecurityToken is IPetylContract, ERC1400, CloneFactory {
         return partitionConversions[_from][_to];
     }
 
-    function deleteConversion(bytes32 _from, bytes32 _to) public onlyOwner returns (bool success) {
+    function deleteConversion(bytes32 _from, bytes32 _to) public  returns (bool success) {
+        require(isOwner());
         partitionConversions[_from][_to] = address(0);
         success = true;
     }
@@ -158,10 +161,11 @@ contract PetylSecurityToken is IPetylContract, ERC1400, CloneFactory {
         //success = true;
         emit AddedNewPartition(address(baseToken), partitionId);
     }
-    
+
 
     // footer functions
-    function transferAnyERC20Token(address tokenAddress, uint256 tokens) public onlyOwner returns (bool success) {
+    function transferAnyERC20Token(address tokenAddress, uint256 tokens) public  returns (bool success) {
+        require(isOwner());
         return IERC20(tokenAddress).transfer(mOwner, tokens);
     }
 

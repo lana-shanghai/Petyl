@@ -86,9 +86,15 @@ abstract PetylTokenRecipient is ERC1820Implementer, IERC777Recipient, Owned {
         }
     }
 
-    function acceptTokens() public onlyOwner {allowTokensReceived = true;}
+    function acceptTokens() public  {
+        require(isOwner());
+        allowTokensReceived = true;
+    }
 
-    function rejectTokens() public onlyOwner {allowTokensReceived = false;}
+    function rejectTokens() public {
+        require(isOwner());
+        allowTokensReceived = false;
+    }
 
     function canImplementInterfaceForAddress(address /*addr*/, bytes32 /*interfaceHash*/)
         public

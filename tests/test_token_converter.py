@@ -27,17 +27,17 @@ def test_token_conversion(token_converter, base_token, regulated_token):
     assert base_token.balanceOf(accounts[0]) == '1015 ether'
 
 
-def test_token_converter_canConvert_no_value(token_converter):
-    with reverts():
-        token_converter.canConvert(accounts[0], accounts[0], accounts[0], '0', {'from': accounts[0]}) == True
+# def test_token_converter_canConvert_no_value(token_converter):
+#     with reverts():
+#         token_converter.canConvert(accounts[0], accounts[0], accounts[0], '0', {'from': accounts[0]}) == True
 
-def test_token_converter_canConvert_zero_address(token_converter):
-    with reverts():
-        token_converter.canConvert(ZERO_ADDRESS,accounts[0], accounts[0],   '15 ethers', {'from': accounts[0]}) == True
-    with reverts():
-        token_converter.canConvert(accounts[0], ZERO_ADDRESS, accounts[0], '15 ethers', {'from': accounts[0]}) == True
-    with reverts():
-        token_converter.canConvert(accounts[0], accounts[0], ZERO_ADDRESS,  '15 ethers', {'from': accounts[0]}) == True
+# def test_token_converter_canConvert_zero_address(token_converter):
+#     with reverts():
+#         token_converter.canConvert(ZERO_ADDRESS,accounts[0], accounts[0],   '15 ethers', {'from': accounts[0]}) == True
+#     with reverts():
+#         token_converter.canConvert(accounts[0], ZERO_ADDRESS, accounts[0], '15 ethers', {'from': accounts[0]}) == True
+#     with reverts():
+#         token_converter.canConvert(accounts[0], accounts[0], ZERO_ADDRESS,  '15 ethers', {'from': accounts[0]}) == True
 
 
 def test_token_conversion_no_data(token_converter, base_token, regulated_token):

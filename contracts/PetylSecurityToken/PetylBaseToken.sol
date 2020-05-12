@@ -46,19 +46,22 @@ contract PetylBaseToken is IBaseToken, ERC777, CanSendCodes  {
         return partitionId;
     }
 
-    function disableERC20Transfers() public onlyOwner {  
+    function disableERC20Transfers() public  {  
+        require(isOwner());
         erc20compatible = false;
         ERC1820_BASE.setInterfaceImplementer(address(this), ERC20_TOKENS_INTERFACE_HASH,  address(0));
         emit ERC20Disabled();
     }
 
-    function enableERC20Transfers() public onlyOwner {  
+    function enableERC20Transfers() public  {  
+        require(isOwner());
         erc20compatible = true;
         ERC1820_BASE.setInterfaceImplementer(address(this), ERC20_TOKENS_INTERFACE_HASH, address(this));
         emit ERC20Enabled();
     }
 
-    function addDefaultOperators(address _operator) public override onlyOwner { // AG To Do - Check permissioning
+    function addDefaultOperators(address _operator) public override  { // AG To Do - Check permissioning
+        require(isOwner());
         _defaultOperatorsArray.push(_operator);
         _defaultOperators[_operator] = true;
     }

@@ -215,15 +215,18 @@ def test_transfer_ownership(base_token):
     assert base_token.isOwner({'from': accounts[5]}) == True
 
 def test_controllable(base_token):
-    assert base_token.isControllable({'from': accounts[5]}) == True
-    assert base_token.isControllable({'from': accounts[1]}) == False
+    assert base_token.isController({'from': accounts[5]}) == True
+    assert base_token.isController({'from': accounts[1]}) == False
 
 def test_add_controller(base_token):
     base_token.addController(accounts[6], {'from': accounts[0]})
-    assert base_token.isControllable({'from': accounts[6]}) == True
+    assert base_token.isController({'from': accounts[6]}) == True
 
 def test_remove_controller(base_token):
+    assert base_token.isController({'from': accounts[6]}) == False
     base_token.addController(accounts[6], {'from': accounts[0]})
-    assert base_token.isControllable({'from': accounts[6]}) == True
-    base_token.removeController(accounts[6], {'from': accounts[0]})
-    assert base_token.isControllable({'from': accounts[6]}) == False
+    assert base_token.isController({'from': accounts[6]}) == True
+    tx = base_token.removeController(accounts[6], {'from': accounts[0]})
+    assert 'ControllerRemoved' in tx.events
+
+    assert base_token.isController({'from': accounts[6]}) == False

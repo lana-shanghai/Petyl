@@ -254,20 +254,24 @@ def test_erc1400_not_operator_send(erc1400_token):
 ######################################
 # ERC1400 - Controllers
 ######################################
+def test_erc1400_isController(erc1400_token):
+    assert erc1400_token.isController({'from': accounts[0]}) == True 
+    assert erc1400_token.isController({'from': accounts[5]}) == False 
+
 def test_erc1400_isControllable(erc1400_token):
     assert erc1400_token.isControllable({'from': accounts[0]}) == True 
-    assert erc1400_token.isControllable({'from': accounts[5]}) == False 
-
 
 def test_addController(erc1400_token):
     erc1400_token.addController(accounts[6], {'from': accounts[0]})
-    assert erc1400_token.isControllable({'from': accounts[6]}) == True
+    assert erc1400_token.isController({'from': accounts[6]}) == True
 
 def test_removeController(erc1400_token):
-    erc1400_token.addController(accounts[6], {'from': accounts[0]})
-    assert erc1400_token.isControllable({'from': accounts[6]}) == True
-    erc1400_token.removeController(accounts[6], {'from': accounts[0]})
-    assert erc1400_token.isControllable({'from': accounts[6]}) == False
+    tx = erc1400_token.addController(accounts[6], {'from': accounts[0]})
+    assert 'ControllerAdded' in tx.events
+    assert erc1400_token.isController({'from': accounts[6]}) == True
+    tx = erc1400_token.removeController(accounts[6], {'from': accounts[0]})
+    assert 'ControllerRemoved' in tx.events
+    assert erc1400_token.isController({'from': accounts[6]}) == False
 
 
 def test_erc1400_controllerTransfer(erc1400_token):

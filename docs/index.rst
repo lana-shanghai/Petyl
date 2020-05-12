@@ -4,7 +4,7 @@ Petyl
 
 Petyl is a smart contract framework 
 
-!! Documentation is curently under construction !!
+!! Documentation is currently under construction !!
 
 .. note::
 

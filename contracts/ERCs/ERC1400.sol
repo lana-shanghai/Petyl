@@ -26,7 +26,7 @@ import "../../interfaces/IERC1644.sol";
 // ERC1400 Token Contract
 // ----------------------------------------------------------------------------
 
-contract ERC1400 is IERC1400, IERC20, ERC1643, ERC1644, Controlled,  CertificateControllerMock, CanSendCodes {
+contract ERC1400 is IERC20, IERC1400, ERC1643,  Controlled, CertificateControllerMock, CanSendCodes {
     using SafeMath for uint;
 
     // Set Variables
@@ -257,7 +257,6 @@ contract ERC1400 is IERC1400, IERC20, ERC1643, ERC1644, Controlled,  Certificate
  
      function isControllable() public view override (IERC1644,Controlled) returns (bool) {
         return Controlled.isControllable();
-        return true;
     }
 
     // AG: To Check // Combined into shared operator state
@@ -274,8 +273,9 @@ contract ERC1400 is IERC1400, IERC20, ERC1643, ERC1644, Controlled,  Certificate
         return IERC777(partitionAddress[_partition]).defaultOperators();
     }
 
-    // AG: Permissioning - onlyOwner ? 
+    // AG: Permissioning ? 
     function authorizeOperatorByPartition(bytes32 _partition, address _operator) external override {
+        require(isOwner());
         _authorizeOperatorByPartition(_partition, _operator);
     }
 
@@ -338,9 +338,9 @@ contract ERC1400 is IERC1400, IERC20, ERC1643, ERC1644, Controlled,  Certificate
     // AG: To Check Data
     function issue(address _tokenHolder, uint256 _value, bytes calldata _data)
         external override  
-        onlyOwner
         // isValidCertificate(_data)
     {
+        require(isOwner());
         require(issuance, "Issuance is closed");
         IERC777(partitionAddress[defaultPartition]).mint(_tokenHolder, _value, _data, "");
         emit Issued(msg.sender, _tokenHolder, _value, _data);
@@ -353,9 +353,9 @@ contract ERC1400 is IERC1400, IERC20, ERC1643, ERC1644, Controlled,  Certificate
         bytes calldata _data
     )
         external  override 
-        onlyOwner
         // isValidCertificate(_data)
     {
+        require(isOwner());
         return _issueByPartition(_partition, _tokenHolder, _value, _data);
     }
 
@@ -512,11 +512,72 @@ contract ERC1400 is IERC1400, IERC20, ERC1643, ERC1644, Controlled,  Certificate
         );
     }
 
+    // ------------------------------------------------
+    // Controller Functions  ERC1644
+    // ------------------------------------------------
+    function controllerTransfer(
+        address _from,
+        address _to,
+        uint256 _value,
+        bytes calldata _data,
+        bytes calldata _operatorData
+    )
+        external override 
+        /*onlyController*/
+    {
+        _transferByPartition(defaultPartition, _from, _to, _value, _data);
+        emit ControllerTransfer(msg.sender, _from, _to, _value, _data, _operatorData);
+    }
+
+    function controllerTransferByPartition(
+        bytes32 _partition,
+        address _from,
+        address _to,
+        uint256 _value,
+        bytes calldata _data,
+        bytes calldata _operatorData
+    )
+        external
+        /*onlyController*/
+    {
+        _transferByPartition(_partition,_from, _to, _value, _data);
+        emit ControllerTransfer(msg.sender, _from, _to, _value, _data, _operatorData);
+    }
+
+    function controllerRedeem(
+        address _tokenHolder,
+        uint256 _value,
+        bytes calldata _data,
+        bytes calldata _operatorData
+    )
+        external override
+        /*onlyController*/ 
+    {
+        _operatorRedeemByPartition(defaultPartition, _tokenHolder, _value, _data);
+        emit ControllerRedemption(msg.sender, _tokenHolder, _value, _data, _operatorData);
+    }
+
+    function controllerRedeemByPartition(
+        bytes32 _partition,
+        address _tokenHolder,
+        uint256 _value,
+        bytes calldata _data,
+        bytes calldata _operatorData
+    )
+        external
+        // onlyController
+    {
+        _operatorRedeemByPartition(_partition, _tokenHolder, _value, _data);
+        emit ControllerRedemption(msg.sender, _tokenHolder, _value, _data, _operatorData);
+    }
+
+
 
     // ------------------------------------------------
     // Token Controllers
     // ------------------------------------------------
-    function setPartitionControllers(bytes32 _partition, address[] calldata _controllers) external view onlyOwner {
+    function setPartitionControllers(bytes32 _partition, address[] calldata _controllers) external view  {
+        require(isOwner());
 
     }
 

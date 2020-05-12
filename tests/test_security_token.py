@@ -25,5 +25,5 @@ def test_petyl_token_addNewPartition(security_token, PetylBaseToken):
     assert 'AddedNewPartition' in tx.events
     baseToken = PetylBaseToken.at(tx.events['AddedNewPartition']['partitionAddress'])
     baseToken.addController(controller, {'from': accounts[0]})
-    assert baseToken.isControllable({'from': security_token}) == True
+    assert baseToken.isController({'from': security_token}) == True
 

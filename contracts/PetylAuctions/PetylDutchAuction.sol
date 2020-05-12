@@ -1,7 +1,9 @@
 pragma solidity ^0.6.2;
 
-import "./SafeMath.sol";
+import "../Misc/SafeMath.sol";
 
+
+// MVP prototype. DO NOT USE!
 
 contract PetylDutchAuction {
 

@@ -16,9 +16,15 @@ abstract PetylTokenSender is IERC777Sender, ERC1820Implementer, Owned {
     }
 
 
-    function acceptTokensToSend() public onlyOwner {allowTokensToSend = true;}
+    function acceptTokensToSend() public  {
+        require(isOwner());
+        allowTokensToSend = true;
+    }
 
-    function rejectTokensToSend() public onlyOwner {allowTokensToSend = false;}
+    function rejectTokensToSend() public {
+        require(isOwner());
+        allowTokensToSend = false;
+    }
 
     function canSend(
         bytes32 /*partition*/,
