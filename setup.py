@@ -11,7 +11,7 @@ with open("requirements.txt", "r") as f:
 setup(
     name="petyl",
     packages=find_packages(),
-    version="0.0.2",  # don't change this manually, use bumpversion instead
+    version="0.0.3",  # don't change this manually, use bumpversion instead
     license="MIT",
     description="A token framework for revenue generating ventures",  # noqa: E501
     long_description=long_description,

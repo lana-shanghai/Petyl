@@ -1,7 +1,9 @@
 /* links */
 
 a,
-a:visited {
+a:visited,
+a:hover
+ {
     color: #33dd88;
 }
 
@@ -214,7 +216,10 @@ pre {
 
 .wy-menu-vertical header, .wy-menu-vertical p.caption {
     color: #33dd88 !important;
+}
 
+.wy-menu-vertical a:hover, .wy-nav-top img {
+    background-color:#33cc66;
 }
 
 .wy-nav-top {
