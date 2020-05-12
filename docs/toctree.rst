@@ -23,6 +23,12 @@ Petyl
     :caption: Tokens
     :maxdepth: 2
 
+.. toctree::
+    :caption: Distribution
+    :maxdepth: 2
+    
+    Overview <index.rst>
+    quickstart.rst
 
 .. toctree::
     :caption: Testing

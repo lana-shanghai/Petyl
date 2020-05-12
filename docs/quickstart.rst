@@ -19,4 +19,4 @@ The first step to using Petyl is to create a new toke.
 
     $ petyl init
 
-You can visit the "`Petyl Venture Studio <https://petyl.com>`", 
+You can visit the "`Petyl Venture Studio <https://petyl.com>`_", 

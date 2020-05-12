@@ -2,7 +2,7 @@
 
 a,
 a:visited {
-    color: #aaddff;
+    color: #33dd88;
 }
 
 
@@ -145,7 +145,7 @@ pre {
 /* notes, warnings, hints */
 
 .hint .admonition-title {
-    background: #2aa87c !important;
+    background: #33dd88 !important;
 }
 
 .warning .admonition-title {
@@ -153,7 +153,7 @@ pre {
 }
 
 .admonition-title {
-    background: #3a7ca8 !important;
+    background: #226633 !important;
 }
 
 .admonition,
@@ -169,11 +169,11 @@ pre {
 }
 
 .sidebar {
-    background-color: #191919 !important;
+    background-color: #111 !important;
 }
 
 .sidebar-title {
-    background-color: #2b2b2b !important;
+    background-color: #222 !important;
 }
 
 .wy-menu-vertical a {
@@ -204,4 +204,10 @@ pre {
 
 .toc-backref {
     color: grey !important;
+}
+
+/* Petyl theme */ 
+
+.wy-side-nav-search {
+    background: #33cc66;
 }
