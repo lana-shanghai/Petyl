@@ -153,7 +153,7 @@ pre {
 }
 
 .admonition-title {
-    background: #226633 !important;
+    background: #33a855 !important;
 }
 
 .admonition,
@@ -209,5 +209,14 @@ pre {
 /* Petyl theme */ 
 
 .wy-side-nav-search {
+    background: #33cc66;
+}
+
+.wy-menu-vertical header, .wy-menu-vertical p.caption {
+    color: #33dd88 !important;
+
+}
+
+.wy-nav-top {
     background: #33cc66;
 }
