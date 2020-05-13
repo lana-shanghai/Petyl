@@ -45,8 +45,8 @@ contract Controlled is Owned {
     function isControllable() public virtual view returns (bool) {
         return mIsControllable;
     }
-    function setControllable(_isControllable) public  {
+    function setControllable(bool _isControllable) public  {
         require(isOwner());
-        return mIsControllable;
+        mIsControllable = _isControllable;
     }
 }

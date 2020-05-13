@@ -1,3 +1,4 @@
+.. _documents:
 
 ==========
 Documents

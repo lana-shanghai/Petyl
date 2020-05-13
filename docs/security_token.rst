@@ -1,3 +1,4 @@
+.. _security_token:
 
 ===============
 Security Tokens

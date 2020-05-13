@@ -1,3 +1,4 @@
+.. _dividend_token:
 
 ===============
 Dividned Tokens

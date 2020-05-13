@@ -1,3 +1,4 @@
+.. _petyl_protocol:
 
 ==============
 Petyl Protocol

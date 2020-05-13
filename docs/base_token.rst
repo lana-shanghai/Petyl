@@ -1,3 +1,4 @@
+.. _base_token:
 
 ===========
 Base Tokens

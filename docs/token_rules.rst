@@ -1,3 +1,4 @@
+.. _token_rules:
 
 ===========
 Token Rules
