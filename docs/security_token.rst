@@ -9,7 +9,7 @@ We dont claim to know every juristiction and its requirements, however a number 
 
 
 Components
-=========+
+==========
 Full list of functions can be found in the Referrence docs. 
 
 Partitions
