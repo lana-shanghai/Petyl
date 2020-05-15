@@ -73,7 +73,7 @@ contract PetylTokenFactory is  Owned, CloneFactory {
         baseToken = createClone(baseTokenTemplate);
         isChild[address(baseToken)] = true;
         children.push(address(baseToken));
-        IPetylToken(baseToken).initBaseToken(_tokenOwner,_name, _symbol,_defaultOperators,_burnOperator, _initialSupply);
+        IPetylToken(baseToken).initBaseToken(_tokenOwner, _symbol,_name,_defaultOperators,_burnOperator, _initialSupply);
         emit BaseTokenDeployed(msg.sender, address(baseToken), baseTokenTemplate, msg.value);
     }
 
@@ -89,7 +89,7 @@ contract PetylTokenFactory is  Owned, CloneFactory {
     {
         require(msg.value >= minimumFee);
         petylToken = createClone(petylTemplate);
-        address baseToken = deployBaseToken(_tokenOwner,_name, _symbol,_defaultOperators,_burnOperator, _initialSupply);
+        address baseToken = deployBaseToken(_tokenOwner, _symbol,_name, _defaultOperators,_burnOperator, _initialSupply);
 
         IPetylContract(petylToken).initPetylSecurityToken(msg.sender, baseToken);
         isChild[address(petylToken)] = true;

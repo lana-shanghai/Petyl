@@ -6,8 +6,8 @@ Petyl
     :maxdepth: 2
 
     Overview <index.rst>
-    quickstart.rst
-    demo.rst
+    .. quickstart.rst
+    .. demo.rst
 
 .. toctree::
     :caption: Getting Started

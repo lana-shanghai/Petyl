@@ -4,11 +4,11 @@
 Dividned Tokens
 ===============
 Dividend tokens are base tokens with additional functions to both accept and distribute funds to token holders.
-Due to the internal accounting required to keep track of who is owed what amount, dividend tokens must be minted or converted from base tokens using a token conerter. 
+Due to the internal accounting required to keep track of who is owed what amount, dividend tokens must be minted or converted from base tokens using a token converter. 
 
 Functions
 =========
-Full list of functions can be found in the Referrence docs. 
+Full list of functions can be found in the Reference docs. 
 
 Deposit Dividends
 =================

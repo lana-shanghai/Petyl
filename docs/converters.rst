@@ -12,7 +12,19 @@ Use Cases
 =========
 
 - Founder tokens that vest over time.
-- Onboarding exisiting ERC20 tokens and converting them to base tokens.
-- Converting base tokens to dividend tokens.
+- Migrating exisiting ERC20 tokens and converting them into Petyl tokens.
+- Converting base tokens into dividend tokens
+
+
+Adding Converters
+=================
+
+Main contract owner can assign new converters for any of its underlying tokens.
+Only the Main Contract summoner is only able to add token converters. This is to ensure the security of the system. 
+Testing is available for basic checks on token converters to ensure a 1 to 1 converting of tokens is kept true. 
+
+
+Converting Tokens
+=================
 
 
