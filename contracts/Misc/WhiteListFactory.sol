@@ -1,9 +1,9 @@
 pragma solidity ^0.6.2;
 
 
-import "../Misc/Owned.sol";
-import "../Misc/SafeMath.sol";
-import "../Misc/CloneFactory.sol";
+import "./Owned.sol";
+import "./SafeMath.sol";
+import "./CloneFactory.sol";
 import "../../interfaces/IERC20.sol";
 import "../../interfaces/IOwned.sol";
 import "../../interfaces/WhiteListInterface.sol";

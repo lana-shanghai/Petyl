@@ -80,7 +80,7 @@ def base_token(PetylBaseToken, petyl_factory):
     controller = accounts[5]
     initial_supply = '1000 ether'
 
-    tx = petyl_factory.deployBaseToken(token_owner, symbol, name, default_operators, burn_operator, initial_supply,{'from': accounts[0]})
+    tx = petyl_factory.deployBaseToken(token_owner,  name,symbol, default_operators, burn_operator, initial_supply,{'from': accounts[0]})
     base_token = PetylBaseToken.at(tx.return_value)
     base_token.addController(controller, {'from': token_owner})
 
@@ -104,7 +104,7 @@ def regulated_token(PetylBaseToken, petyl_factory, token_regulator):
     controller = accounts[5]
     initial_supply = '500 ether'
 
-    tx = petyl_factory.deployBaseToken(token_owner, symbol, name, default_operators, burn_operator, initial_supply,{'from': accounts[0]})
+    tx = petyl_factory.deployBaseToken(token_owner,  name, symbol, default_operators, burn_operator, initial_supply,{'from': accounts[0]})
     regulated_token = PetylBaseToken.at(tx.return_value)
 
     regulated_token.addController(controller, {'from': accounts[0]})
@@ -150,7 +150,7 @@ def security_token(petyl_factory, regulated_token, PetylSecurityToken):
     controller = accounts[5]
     initial_supply = '1000 ether'
 
-    tx = petyl_factory.deployPetylContract(token_owner, symbol, name, default_operators, burn_operator, initial_supply,{'from': accounts[0]})
+    tx = petyl_factory.deployPetylContract(token_owner, name,  symbol, default_operators, burn_operator, initial_supply,{'from': accounts[0]})
     assert 'PetylDeployed' in tx.events
     security_token = PetylSecurityToken.at(tx.return_value)
 

@@ -61,7 +61,7 @@ def deploy_regulated_token(petyl_factory, token_regulator):
     controller = accounts[0]
     initial_supply = '500 ether'
      
-    tx = petyl_factory.deployBaseToken(token_owner, symbol, name, default_operators, burn_operator, initial_supply,{'from': accounts[0]})
+    tx = petyl_factory.deployBaseToken(token_owner,  name, symbol, default_operators, burn_operator, initial_supply,{'from': accounts[0]})
     regulated_token = PetylBaseToken.at(tx.events['BaseTokenDeployed']['addr'])
     # event BaseTokenDeployed(address indexed owner, address indexed addr, address baseToken, uint256 fee);
 
@@ -83,7 +83,7 @@ def deploy_security_token(petyl_factory, regulated_token):
     controller = accounts[0]
     initial_supply = '1000 ether'
 
-    tx = petyl_factory.deployPetylContract(token_owner, symbol, name, default_operators, burn_operator, initial_supply,{'from': accounts[0]})
+    tx = petyl_factory.deployPetylContract(token_owner, name, symbol, default_operators, burn_operator, initial_supply,{'from': accounts[0]})
     assert 'PetylDeployed' in tx.events
     security_token = PetylSecurityToken.at(tx.events['PetylDeployed']['addr'])
     # event PetylDeployed(address indexed owner, address indexed addr, address petylToken,address baseToken, uint256 fee);

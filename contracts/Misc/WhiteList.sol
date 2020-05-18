@@ -9,7 +9,7 @@ pragma solidity ^0.6.2;
 // (c) BokkyPooBah / Bok Consulting Pty Ltd. The MIT Licence.
 // ----------------------------------------------------------------------------
 
-import "../Misc/Controlled.sol";
+import "./Controlled.sol";
 import "../../interfaces/WhiteListInterface.sol";
 
 
