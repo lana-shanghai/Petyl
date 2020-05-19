@@ -342,7 +342,7 @@ contract ERC777 is IERC20, IERC777, Context, ERC1820Implementer, Controlled {
     internal virtual
     {
         require(account != address(0), "ERC777: mint to the zero address");
-
+        _beforeTokenTransfer(operator, address(0), account, amount);
         // Update state variables
         _totalSupply = _totalSupply.add(amount);
         _balances[account] = _balances[account].add(amount);
@@ -404,6 +404,7 @@ contract ERC777 is IERC20, IERC777, Context, ERC1820Implementer, Controlled {
         require(from != address(0), "ERC777: burn from the zero address");
 
         _callTokensToSend(operator, from, address(0), amount, data, operatorData);
+        _beforeTokenTransfer(operator, from, address(0), amount);
 
         // Update state variables
         _balances[from] = _balances[from].sub(amount, "ERC777: burn amount exceeds balance");

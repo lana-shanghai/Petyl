@@ -39,7 +39,7 @@ import "../ERCs/ERC1643.sol";
 // import "../ERCs/ERC1644.sol";
 
 // Petyl Security Token
-contract PetylSecurityToken is IPetylContract, ERC1400,  CloneFactory {
+contract PetylVenture is IPetylContract, ERC1400,  CloneFactory {
 
     using SafeMath for uint;
 
@@ -60,7 +60,7 @@ contract PetylSecurityToken is IPetylContract, ERC1400,  CloneFactory {
     address public baseTokenTemplate;
 
     // AG: To be finalised
-    function initPetylSecurityToken(address _owner, address _baseToken) public override  {
+    function initPetylVenture(address _owner, address _baseToken) public override  {
         _initERC1400(_owner, _baseToken);
         baseTokenTemplate = _baseToken;
         // add to totalSupplyHistory { block.number, baseToken.totalSupply(); }

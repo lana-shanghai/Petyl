@@ -28,9 +28,9 @@ def deploy_base_token_template():
     base_token_template = PetylBaseToken.deploy({'from': accounts[0]})
     return base_token_template
 
-def deploy_security_token_template():
-    security_token_template = PetylSecurityToken.deploy({"from": accounts[0]})
-    return security_token_template
+def deploy_venture_template():
+    venture_template = PetylVenture.deploy({"from": accounts[0]})
+    return venture_template
 
 def deploy_white_list_template():
     white_list_template = WhiteList.deploy({"from": accounts[0]})
@@ -40,9 +40,9 @@ def deploy_token_regulator( ):
     token_regulator = PetylTokenRegulator.deploy({'from': accounts[0]})
     return token_regulator
 
-def deploy_petyl_factory(security_token_template, base_token_template):
+def deploy_petyl_factory(venture_template, base_token_template):
     petyl_factory = PetylTokenFactory.deploy({"from": accounts[0]})
-    petyl_factory.initPetylTokenFactory(security_token_template ,base_token_template, 0, {"from": accounts[0]})
+    petyl_factory.initPetylTokenFactory(venture_template ,base_token_template, 0, {"from": accounts[0]})
     assert petyl_factory.numberOfChildren( {'from': accounts[0]}) == 0 
     return petyl_factory
 
@@ -74,7 +74,7 @@ def deploy_regulated_token(petyl_factory, token_regulator):
 
 
 
-def deploy_security_token(petyl_factory, regulated_token):
+def deploy_petyl_venture(petyl_factory, regulated_token):
     token_owner = accounts[0]
     name = 'BASE TOKEN'
     symbol = 'BTN'
@@ -85,13 +85,13 @@ def deploy_security_token(petyl_factory, regulated_token):
 
     tx = petyl_factory.deployPetylContract(token_owner, name, symbol, default_operators, burn_operator, initial_supply,{'from': accounts[0]})
     assert 'PetylDeployed' in tx.events
-    security_token = PetylSecurityToken.at(tx.events['PetylDeployed']['addr'])
+    petyl_venture = PetylVenture.at(tx.events['PetylDeployed']['addr'])
     # event PetylDeployed(address indexed owner, address indexed addr, address petylToken,address baseToken, uint256 fee);
 
-    # base_token.authorizeOperator(security_token, {'from': accounts[0]})
-    tx = security_token.addPartition(regulated_token, {"from": accounts[0]})
+    # base_token.authorizeOperator(petyl_venture, {'from': accounts[0]})
+    tx = petyl_venture.addPartition(regulated_token, {"from": accounts[0]})
     assert 'AddedPartition' in tx.events
-    return security_token
+    return petyl_venture
 
 
 def deploy_whitelist(whitelist_factory):
@@ -116,21 +116,21 @@ def main():
 
     base_token_template =  web3.toChecksumAddress(0x2C34BF5Ce343b83030A33f6b1C3546Ab06C93829) 
     # base_token_template = deploy_base_token_template()
-    security_token_template = web3.toChecksumAddress(0x71dAD5FE6ca59007d2672bb80988FC02E7113960) 
-    #security_token_template = deploy_security_token_template()
+    venture_template = web3.toChecksumAddress(0x71dAD5FE6ca59007d2672bb80988FC02E7113960) 
+    #venture_template = deploy_venture_template()
     white_list_template = web3.toChecksumAddress(0x71F175F6FFa58E4b78f4ef0EdCFEbAB934C0C809) 
     # white_list_template = deploy_white_list_template()
     token_regulator = web3.toChecksumAddress(0xDaA29B5E2C23029D411314777F98315Dd11F2335)  
     # token_regulator = deploy_token_regulator()
 
-    # petyl_factory = deploy_petyl_factory(security_token_template, base_token_template) 
+    # petyl_factory = deploy_petyl_factory(venture_template, base_token_template) 
     petyl_factory = PetylTokenFactory.at(web3.toChecksumAddress(0x1Ff271BD00e192397fBC65cD95668dD9E7A4f171)) 
 
     # whitelist_factory = deploy_whitelist_factory( white_list_template)
     whitelist_factory =  WhiteListFactory.at(web3.toChecksumAddress(0x52Bb89399F4d137D7cA2a8bc909C7F5cdFA0D688)) 
 
     # regulated_token = deploy_regulated_token(petyl_factory, token_regulator)
-    # security_token = deploy_security_token(petyl_factory, regulated_token)
+    # petyl_venture = deploy_petyl_venture(petyl_factory, regulated_token)
     white_list = deploy_whitelist(whitelist_factory)
 
 
@@ -138,7 +138,7 @@ def main():
 
 
 
-# Running 'scripts.deploy_PetylSecurityToken.main'...
+# Running 'scripts.deploy_PetylVenture.main'...
 # Transaction sent: 0xe4a8f7a7314add93271eda78f527221ba992ad0613a0fe048e92dfa915c7998c
 #   Gas price: 1.0 gwei   Gas limit: 3403212
 # Waiting for confirmation...
@@ -148,8 +148,8 @@ def main():
 # Transaction sent: 0xbe2e73ce827d679632fdce6a71a851737de049fb40d0929480d327bb371bf6df
 #   Gas price: 1.0 gwei   Gas limit: 4627797
 # Waiting for confirmation...
-#   PetylSecurityToken.constructor confirmed - Block: 7823033   Gas used: 4627797 (100.00%)
-#   PetylSecurityToken deployed at: 0xf84406b8bB9ae8059ae6CE099905993319F6bF61
+#   PetylVenture.constructor confirmed - Block: 7823033   Gas used: 4627797 (100.00%)
+#   PetylVenture deployed at: 0xf84406b8bB9ae8059ae6CE099905993319F6bF61
 
 # Transaction sent: 0x44c47aac79115045b96dee2e305823c25b34d54e830a49c576a2b913032b01d3
 #   Gas price: 1.0 gwei   Gas limit: 582324

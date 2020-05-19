@@ -15,5 +15,7 @@ interface IPetylToken {
         address _burnOperator,
         uint256 _initialSupply
     ) external;
+    function burn(uint256 amount, bytes calldata data) external;
+    function mint(address to, uint256 amount, bytes calldata userData, bytes calldata operatorData) external;
 
 }

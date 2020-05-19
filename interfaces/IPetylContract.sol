@@ -6,6 +6,6 @@ pragma solidity ^0.6.2;
 // ----------------------------------------------------------------------------
 
 interface IPetylContract {
-    function initPetylSecurityToken(address _owner, address _baseToken) external ;
+    function initPetylVenture(address _owner, address _baseToken) external ;
 
 }

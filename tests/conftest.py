@@ -41,9 +41,9 @@ def base_token_template(PetylBaseToken, erc1820_registry):
 
 
 @pytest.fixture(scope='module', autouse=True)
-def security_token_template(PetylSecurityToken):
-    security_token_template = PetylSecurityToken.deploy({"from": accounts[0]})
-    return security_token_template
+def venture_template(PetylVenture):
+    venture_template = PetylVenture.deploy({"from": accounts[0]})
+    return venture_template
 
 
 @pytest.fixture(scope='module', autouse=True)
@@ -53,9 +53,9 @@ def white_list_template(WhiteList):
 
 
 @pytest.fixture(scope='module', autouse=True)
-def petyl_factory(PetylTokenFactory, security_token_template, base_token_template):
+def petyl_factory(PetylTokenFactory, venture_template, base_token_template):
     petyl_factory = PetylTokenFactory.deploy({"from": accounts[0]})
-    petyl_factory.initPetylTokenFactory(security_token_template ,base_token_template, 0, {"from": accounts[0]})
+    petyl_factory.initPetylTokenFactory(venture_template ,base_token_template, 0, {"from": accounts[0]})
     assert petyl_factory.numberOfChildren( {'from': accounts[0]}) == 0 
 
     return petyl_factory
@@ -123,9 +123,9 @@ def white_list(whitelist_factory, WhiteList):
 
 
 @pytest.fixture(scope='module', autouse=True)
-def erc1400_token(PetylSecurityToken, base_token, regulated_token):
-    erc1400_token = PetylSecurityToken.deploy({"from": accounts[0]})
-    erc1400_token.initPetylSecurityToken(accounts[0], base_token, {"from": accounts[0]})
+def erc1400_token(PetylVenture, base_token, regulated_token):
+    erc1400_token = PetylVenture.deploy({"from": accounts[0]})
+    erc1400_token.initPetylVenture(accounts[0], base_token, {"from": accounts[0]})
     base_token.authorizeOperator(erc1400_token, {'from': accounts[0]})
     tx = erc1400_token.addPartition(regulated_token, {"from": accounts[0]})
     assert 'AddedPartition' in tx.events
@@ -141,7 +141,7 @@ def token_converter(PetylTokenConverter):
 
 
 @pytest.fixture(scope='module', autouse=True)
-def security_token(petyl_factory, regulated_token, PetylSecurityToken):
+def petyl_venture(petyl_factory, regulated_token, PetylVenture):
     token_owner = accounts[0]
     name = 'BASE TOKEN'
     symbol = 'BTN'
@@ -152,12 +152,12 @@ def security_token(petyl_factory, regulated_token, PetylSecurityToken):
 
     tx = petyl_factory.deployPetylContract(token_owner, name,  symbol, default_operators, burn_operator, initial_supply,{'from': accounts[0]})
     assert 'PetylDeployed' in tx.events
-    security_token = PetylSecurityToken.at(tx.return_value)
+    petyl_venture = PetylVenture.at(tx.return_value)
 
-    # base_token.authorizeOperator(security_token, {'from': accounts[0]})
-    tx = security_token.addPartition(regulated_token, {"from": accounts[0]})
+    # base_token.authorizeOperator(petyl_venture, {'from': accounts[0]})
+    tx = petyl_venture.addPartition(regulated_token, {"from": accounts[0]})
     assert 'AddedPartition' in tx.events
-    return security_token
+    return petyl_venture
 
 
 
@@ -169,9 +169,9 @@ def security_token(petyl_factory, regulated_token, PetylSecurityToken):
 
 
 # @pytest.fixture(scope='module', autouse=True)
-# def petyl_factory_test(PetylTokenFactory, security_token_template, base_token_template, white_list_template):
+# def petyl_factory_test(PetylTokenFactory, venture_template, base_token_template, white_list_template):
 #     petyl_factory = PetylTokenFactory.deploy({"from": accounts[0]})
-#     petyl_factory.initPetylTokenFactory(security_token, white_list_template, 0, {"from": accounts[0]})
+#     petyl_factory.initPetylTokenFactory(petyl_venture, white_list_template, 0, {"from": accounts[0]})
 #     assert petyl_factory.numberOfChildren( {'from': accounts[0]}) == 0 
 #     return petyl_factory
 

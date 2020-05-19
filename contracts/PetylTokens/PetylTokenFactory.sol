@@ -92,7 +92,7 @@ contract PetylTokenFactory is  Owned, CloneFactory {
         petylToken = createClone(petylTemplate);
         address baseToken = deployBaseToken(_tokenOwner, _name, _symbol, _defaultOperators,_burnOperator, _initialSupply);
 
-        IPetylContract(petylToken).initPetylSecurityToken(msg.sender, baseToken);
+        IPetylContract(petylToken).initPetylVenture(msg.sender, baseToken);
         isChild[address(petylToken)] = true;
         children.push(address(petylToken));
         emit PetylDeployed(msg.sender, address(petylToken), petylTemplate, baseToken, msg.value);

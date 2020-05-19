@@ -32,8 +32,8 @@ Petyl
 
     token_types.rst
     base_token.rst
-    dividend_token.rst
-    security_token.rst
+    distribution_token.rst
+    petyl_venture.rst
     options.rst
 
 .. .. toctree::

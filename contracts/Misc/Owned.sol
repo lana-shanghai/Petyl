@@ -26,10 +26,10 @@ contract Owned {
     }
     function transferOwnership(address newOwner) public {
         require(isOwner());
+        require(newOwner != address(0));
         _transferOwnership(newOwner);
     }
     function _transferOwnership(address newOwner) internal {
-        require(newOwner != address(0));
         emit OwnershipTransferred(mOwner, newOwner);
         mOwner = newOwner;
     }
