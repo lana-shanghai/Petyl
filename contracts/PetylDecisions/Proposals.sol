@@ -35,7 +35,7 @@ library Proposals {
         AddRule,                           //  7 Add governance rule
         DeleteRule,                        //  8 Delete governance rule
         UpdateClubEthName,                 //  9 Update ClubEth name
-        UpdateInitialTokensForNewMembers,  // 10 Update initialTokensForNewMembers
+        UpdateTokensForNewMembers,         // 10 Update tokensForNewMembers
         UpdateClubEthToken,                // 11 Update ClubEthToken
         UpdateClubEth                      // 12 Update ClubEth
     }
@@ -136,6 +136,25 @@ library Proposals {
         proposalId = self.proposals.length - 1;
         emit NewProposal(proposalId, proposal.proposalType, msg.sender);
     }
+    function proposeUpdateTokensForNewMembers(Data storage self, string memory description, uint amount) internal returns (uint proposalId) {
+        require(address(this).balance >= amount);
+        Proposal memory proposal = Proposal({
+            proposalType: ProposalType.UpdateTokensForNewMembers,
+            proposer: msg.sender,
+            description: description,
+            address1: address(0),
+            address2: address(0),
+            amount: amount,
+            votedNo: 0,
+            votedYes: 0,
+            initiated: now,
+            closed: 0,
+            pass: false
+        });
+        self.proposals.push(proposal);
+        proposalId = self.proposals.length - 1;
+        emit NewProposal(proposalId, proposal.proposalType, msg.sender);
+    }
     function proposeEtherTransfer(Data storage self, string memory description, address recipient, uint amount) internal returns (uint proposalId) {
         require(address(this).balance >= amount);
         Proposal memory proposal = Proposal({
@@ -155,6 +174,9 @@ library Proposals {
         proposalId = self.proposals.length - 1;
         emit NewProposal(proposalId, proposal.proposalType, msg.sender);
     }
+
+
+
     function vote(Data storage self, uint proposalId, bool yesNo, uint membersLength, uint quorum, uint requiredMajority) internal {
         Proposal storage proposal = self.proposals[proposalId];
         require(proposal.closed == 0);

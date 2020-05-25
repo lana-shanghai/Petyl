@@ -4,7 +4,7 @@ import "./Members.sol";
 import "./Proposals.sol";
 import "../Misc/Owned.sol";
 import "../Misc/SafeMath.sol";
-import "../../interfaces/IERC777.sol";
+import "../../interfaces/IPetylToken.sol";
 
 
 
@@ -26,15 +26,15 @@ contract PetylVote is Owned {
 
     string public name;
 
-    IERC777 public token;
+    IPetylToken public token;
     Members.Data members;
     Proposals.Data proposals;
 
     uint public tokensForNewMembers;
 
-    uint public quorum = 80;
-    uint public quorumDecayPerWeek = 10;
-    uint public requiredMajority = 70;
+    uint public quorum = 80;              // AG Updateable
+    uint public quorumDecayPerWeek = 10;  // AG Updateable
+    uint public requiredMajority = 70;    // AG Updateable
 
     // Must be copied here to be added to the ABI
     event MemberAdded(address indexed memberAddress, string name, uint totalAfter);
@@ -59,15 +59,15 @@ contract PetylVote is Owned {
         _initOwned(msg.sender);
         name = _groupName;
         tokensForNewMembers = _tokensForNewMembers;
-        token = IERC777(_token);
+        token = IPetylToken(_token);
         emit TokenUpdated(address(token), _token);
     }
-    function initAddMember(address _address, string memory _name) public  {
+    function initAddMember( string memory _name, address _address) public  {
         require(isOwner());
         require(!members.isInitialised());
         require(address(token) != address(0));
         members.add(_address, _name);
-        token.mint(_address, tokensForNewMembers, "","");
+        token.operatorMint(_address, tokensForNewMembers, "","");
 
     }
     function initRemoveMember(address _address) public {
@@ -82,7 +82,6 @@ contract PetylVote is Owned {
         members.init();
         _transferOwnership(address(0));
     }
-
 
 
 
@@ -105,6 +104,10 @@ contract PetylVote is Owned {
         proposalId = proposals.proposeBurnTokens(description, tokenOwner, amount);
         vote(proposalId, true);
     }
+    function proposeUpdateTokensForNewMembers(string memory description,  uint amount) public onlyMember returns (uint proposalId) {
+        proposalId = proposals.proposeUpdateTokensForNewMembers(description, amount);
+        vote(proposalId, true);
+    }
     function proposeEtherTransfer(string memory description, address recipient, uint amount) public onlyMember returns (uint proposalId) {
         proposalId = proposals.proposeEtherTransfer(description, recipient, amount);
         vote(proposalId, true);
@@ -123,15 +126,20 @@ contract PetylVote is Owned {
             address address1  = proposals.getAddress1(proposalId);
             uint amount = proposals.getAmount(proposalId);
             if (proposalType == Proposals.ProposalType.AddMember) {
-                members.add(address1, description);
-                token.mint(address1, tokensForNewMembers, "","");
+                addMember(address1, description);
+
             } else if (proposalType == Proposals.ProposalType.RemoveMember) {
-                members.remove(address1);
-                token.operatorBurn(address1, uint(-1),"","");
+                removeMember(address1);
+
             } else if (proposalType == Proposals.ProposalType.MintTokens) {
-                token.mint(address1, amount,"","");
+                token.operatorMint(address1, amount,"","");
+
             } else if (proposalType == Proposals.ProposalType.BurnTokens) {
                 token.operatorBurn(address1, amount,"","");
+
+            } else if (proposalType == Proposals.ProposalType.UpdateTokensForNewMembers) {
+                setTokensForNewMembers(amount);
+
             } else if (proposalType == Proposals.ProposalType.EtherTransfer) {
                 payable(address1).transfer(amount);
                 emit EtherTransferred(proposalId, msg.sender, address1, amount);
@@ -143,23 +151,25 @@ contract PetylVote is Owned {
         return proposals.getVotingStatus(proposalId, members.length(), getQuorum(proposals.getInitiated(proposalId), now), requiredMajority);
     }
 
-    /*
-    function setToken(address clubToken) internal {
-        emit TokenUpdated(address(token), clubToken);
-        token = ClubTokenInterface(clubToken);
-    }
+    
+    // function setToken(address clubToken) internal {
+    //     emit TokenUpdated(address(token), clubToken);
+    //     token = ClubTokenInterface(clubToken);
+    // }
     function setTokensForNewMembers(uint _tokensForNewMembers) internal {
         emit TokensForNewMembersUpdated(tokensForNewMembers, _tokensForNewMembers);
         tokensForNewMembers = _tokensForNewMembers;
     }
     function addMember(address memberAddress, string memory memberName) internal {
         members.add(memberAddress, memberName);
-        token.mint(memberAddress, tokensForNewMembers);
+        token.operatorMint(memberAddress, tokensForNewMembers,"","");
     }
     function removeMember(address memberAddress) internal {
         members.remove(memberAddress);
+        token.operatorBurn(memberAddress, uint(-1),"","");
+
     }
-    */
+
 
     function numberOfMembers() public view returns (uint) {
         return members.length();
