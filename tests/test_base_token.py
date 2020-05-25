@@ -3,11 +3,8 @@ from brownie.network.transaction import TransactionReceipt
 from brownie.convert import to_address
 import pytest
 from brownie import Contract
+from settings import *
 
-ERC777_INTERFACE_HASH = '0xac7fbab5f54a3ca8194167523c6753bfeb96a445279294b6125b68cce2177054'
-ERC20_TOKENS_INTERFACE_HASH = '0xaea199e31a596269b42cdafd93407f14436db6e4cad65417994c2eb37381e05a'
-ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
-ERC1820_ACCEPT_MAGIC = '0xa2ef4600d742022d532d4747cb3547474667d6f13804902513b2ec01c848f4b4'
 
 # reset the chain after every test case
 @pytest.fixture(autouse=True)
@@ -81,7 +78,7 @@ def test_erc20_approve(base_token):
 
 
 def test_erc20_transfer_from(base_token):
-    base_token.approve(accounts[1], '10 ether', {'from': accounts[0]})
+    base_token.approve(accounts[1], "10 ether", {'from': accounts[0]})
 
     tx = base_token.transferFrom(accounts[0], accounts[2], '5 ether', {'from': accounts[1]})
 

@@ -17,8 +17,8 @@ contract PetylBaseToken is IBaseToken, ERC777, CanSendCodes  {
 
     bytes32 public partitionId;   // internal
 
-    // keccak256("ERC777TokensRegulator")
-    bytes32 constant private TOKENS_REGULATOR_INTERFACE_HASH =
+    // keccak256("ERC777TokenRules")
+    bytes32 constant private TOKEN_RULES_INTERFACE_HASH =
         0xc4a4c123287cf7b0d8046a21e081e4b2801e57af59a2546c99adf112443f5012;
 
     IERC1820Registry constant internal ERC1820_BASE = IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
@@ -66,12 +66,12 @@ contract PetylBaseToken is IBaseToken, ERC777, CanSendCodes  {
         _defaultOperators[_operator] = true;
     }
 
-    function setRegulator(address _regulator) public override /*onlyController*/ {
+    function setTokenRules(address _rules) public override /*onlyController*/ {
         require(controllers[msg.sender] || mOwner == msg.sender); // replaces onlyController
-        ERC1820_BASE.setInterfaceImplementer(address(this), TOKENS_REGULATOR_INTERFACE_HASH, _regulator);
-        ERC1820_BASE.setInterfaceImplementer(address(this), TOKENS_SENDER_INTERFACE_HASH, _regulator);
-        ERC1820_BASE.setInterfaceImplementer(address(this), TOKENS_RECIPIENT_INTERFACE_HASH, _regulator);
-        emit SetRegulator(_msgSender(), _regulator);
+        ERC1820_BASE.setInterfaceImplementer(address(this), TOKEN_RULES_INTERFACE_HASH, _rules);
+        ERC1820_BASE.setInterfaceImplementer(address(this), TOKENS_SENDER_INTERFACE_HASH, _rules);
+        ERC1820_BASE.setInterfaceImplementer(address(this), TOKENS_RECIPIENT_INTERFACE_HASH, _rules);
+        emit SetTokenRules(_msgSender(), _rules);
     }
 
     function setBurnOperator(address _burnOperator, bool _status) public /*onlyController*/ override {
@@ -95,7 +95,7 @@ contract PetylBaseToken is IBaseToken, ERC777, CanSendCodes  {
         _burn(_msgSender(), account, amount, data, operatorData);
     }
     function operatorMint(address account, uint256 amount, bytes memory data, bytes memory operatorData) public override {
-        require(mintOperator[_msgSender()] == true, "ERC777: caller is not a burn operator");
+        require(mintOperator[_msgSender()] == true, "ERC777: caller is not a mint operator");
         _mint(_msgSender(), account, amount, data, operatorData);
     }
 
@@ -142,10 +142,10 @@ contract PetylBaseToken is IBaseToken, ERC777, CanSendCodes  {
         returns (byte, bytes32, bytes32)
     {
 
-       address regulator = ERC1820_REGISTRY.getInterfaceImplementer(from, TOKENS_REGULATOR_INTERFACE_HASH);
+       address rules = ERC1820_REGISTRY.getInterfaceImplementer(from, TOKEN_RULES_INTERFACE_HASH);
 
-        if(regulator != address(0)) {
-            return IERC777Regulator(regulator).canTransfer(
+        if(rules != address(0)) {
+            return IERC777TokenRules(rules).canTransfer(
                 partitionId,
                 operator,
                 from,

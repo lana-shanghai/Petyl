@@ -1,10 +1,10 @@
 
-from brownie import accounts, web3, Wei
+from brownie import accounts, web3, Wei, rpc
 from brownie.network.transaction import TransactionReceipt
 from brownie.convert import to_address
 import pytest
 from brownie import Contract
-
+from settings import *
 
 ######################################
 # Deploy Contracts
@@ -34,6 +34,12 @@ def erc1820_registry(ERC1820Registry):
     return Contract('ERC1820Registry','0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24', abi)
 
 
+
+##############################################
+# Token Factory
+##############################################
+
+
 @pytest.fixture(scope='module', autouse=True)
 def base_token_template(PetylBaseToken, erc1820_registry):
     base_token_template = PetylBaseToken.deploy({'from': accounts[0]})
@@ -47,12 +53,6 @@ def venture_template(PetylVenture):
 
 
 @pytest.fixture(scope='module', autouse=True)
-def white_list_template(WhiteList):
-    white_list_template = WhiteList.deploy({"from": accounts[0]})
-    return white_list_template
-
-
-@pytest.fixture(scope='module', autouse=True)
 def petyl_factory(PetylTokenFactory, venture_template, base_token_template):
     petyl_factory = PetylTokenFactory.deploy({"from": accounts[0]})
     petyl_factory.initPetylTokenFactory(venture_template ,base_token_template, 0, {"from": accounts[0]})
@@ -60,14 +60,6 @@ def petyl_factory(PetylTokenFactory, venture_template, base_token_template):
 
     return petyl_factory
 
-
-
-@pytest.fixture(scope='module', autouse=True)
-def whitelist_factory(WhiteListFactory,white_list_template):
-    whitelist_factory = WhiteListFactory.deploy({"from": accounts[0]})
-    whitelist_factory.initWhiteListFactory( white_list_template, 0, {"from": accounts[0]})
-    assert whitelist_factory.numberOfChildren( {'from': accounts[0]}) == 0 
-    return whitelist_factory
 
 @pytest.fixture(scope='module', autouse=True)
 def base_token(PetylBaseToken, petyl_factory):
@@ -87,15 +79,48 @@ def base_token(PetylBaseToken, petyl_factory):
     return base_token
 
 
-@pytest.fixture(scope='module', autouse=True)
-def token_regulator(PetylTokenRegulator, base_token, erc1820_registry):
-    token_regulator = PetylTokenRegulator.deploy({'from': accounts[0]})
-    tx = token_regulator.registerToken(base_token, {'from': accounts[0]}) 
-    return token_regulator
+
+##############################################
+# White List
+##############################################
 
 
 @pytest.fixture(scope='module', autouse=True)
-def regulated_token(PetylBaseToken, petyl_factory, token_regulator):
+def white_list_template(WhiteList):
+    white_list_template = WhiteList.deploy({"from": accounts[0]})
+    return white_list_template
+
+
+
+@pytest.fixture(scope='module', autouse=True)
+def whitelist_factory(WhiteListFactory,white_list_template):
+    whitelist_factory = WhiteListFactory.deploy({"from": accounts[0]})
+    whitelist_factory.initWhiteListFactory( white_list_template, 0, {"from": accounts[0]})
+    assert whitelist_factory.numberOfChildren( {'from': accounts[0]}) == 0 
+    return whitelist_factory
+
+@pytest.fixture(scope='module', autouse=True)
+def white_list(whitelist_factory, WhiteList):
+    tx = whitelist_factory.deployWhiteList(accounts[0], [accounts[0]], {'from': accounts[0]})
+    white_list = WhiteList.at(tx.return_value)
+    return white_list
+
+
+
+##############################################
+# Venture
+##############################################
+
+
+@pytest.fixture(scope='module', autouse=True)
+def token_rules(PetylTokenRules, base_token, erc1820_registry):
+    token_rules = PetylTokenRules.deploy({'from': accounts[0]})
+    tx = token_rules.registerToken(base_token, {'from': accounts[0]}) 
+    return token_rules
+
+
+@pytest.fixture(scope='module', autouse=True)
+def regulated_token(PetylBaseToken, petyl_factory, token_rules):
     token_owner = accounts[0]
     name = 'REGULATED TOKEN'
     symbol = 'RTN'
@@ -108,18 +133,11 @@ def regulated_token(PetylBaseToken, petyl_factory, token_regulator):
     regulated_token = PetylBaseToken.at(tx.return_value)
 
     regulated_token.addController(controller, {'from': accounts[0]})
-    tx = token_regulator.registerToken(regulated_token, {'from': accounts[0]}) 
-    tx = regulated_token.setRegulator(token_regulator, {'from': accounts[0]})
-    assert 'SetRegulator' in tx.events
-    assert tx.events['SetRegulator'] == {'controller': accounts[0], 'regulator': token_regulator}
+    tx = token_rules.registerToken(regulated_token, {'from': accounts[0]}) 
+    tx = regulated_token.setTokenRules(token_rules, {'from': accounts[0]})
+    assert 'SetTokenRules' in tx.events
+    assert tx.events['SetTokenRules'] == {'controller': accounts[0], 'rules': token_rules}
     return regulated_token
-
-
-@pytest.fixture(scope='module', autouse=True)
-def white_list(whitelist_factory, WhiteList):
-    tx = whitelist_factory.deployWhiteList(accounts[0], [accounts[0]], {'from': accounts[0]})
-    white_list = WhiteList.at(tx.return_value)
-    return white_list
 
 
 @pytest.fixture(scope='module', autouse=True)
@@ -132,12 +150,10 @@ def erc1400_token(PetylVenture, base_token, regulated_token):
     return erc1400_token
 
 
-
 @pytest.fixture(scope='module', autouse=True)
 def token_converter(PetylTokenConverter):
     token_converter = PetylTokenConverter.deploy( {"from": accounts[0]})
     return token_converter
-
 
 
 @pytest.fixture(scope='module', autouse=True)
@@ -162,36 +178,113 @@ def petyl_venture(petyl_factory, regulated_token, PetylVenture):
 
 
 
+##############################################
+# Voting
+##############################################
 
 
+@pytest.fixture(scope='module', autouse=True)
+def petyl_token(PetylBaseToken, petyl_factory):
+
+    token_owner = accounts[0]
+    name = 'PETYL TOKEN'
+    symbol = 'PTYL'
+    default_operators = [ZERO_ADDRESS]
+    burn_operator = ZERO_ADDRESS
+    controller = ZERO_ADDRESS
+    initial_supply = 0
+
+    tx = petyl_factory.deployBaseToken(token_owner,  name,symbol, default_operators, burn_operator, initial_supply,{'from': accounts[0]})
+    petyl_token = PetylBaseToken.at(tx.return_value)
+    petyl_token.addController(controller, {'from': token_owner})
+
+    return petyl_token
 
 
+@pytest.fixture(scope='module', autouse=True)
+def proposals_lib(Proposals):
+    proposals_lib = Proposals.deploy({'from': accounts[0]})
+    return proposals_lib
+
+@pytest.fixture(scope='module', autouse=True)
+def members_lib(Members):
+    members_lib = Members.deploy({'from': accounts[0]})
+    return members_lib
+
+@pytest.fixture(scope='module', autouse=True)
+def petyl_vote(PetylVote, members_lib, proposals_lib, petyl_token):
+    petyl_vote = PetylVote.deploy({"from": accounts[0]})
+    petyl_token.setMintOperator(petyl_vote, True, {"from": accounts[0]})
+
+    petyl_vote.initPetylVote(petyl_token,"Flowers",VOTE_TOKENS, {"from": accounts[0]})
+    petyl_vote.initAddMember("Rose", accounts[0], {"from": accounts[0]})
+    petyl_vote.initAddMember("Tulip", accounts[1], {"from": accounts[0]})
+    petyl_vote.initialisationComplete({"from": accounts[0]})
+    return petyl_vote
 
 
 # @pytest.fixture(scope='module', autouse=True)
-# def petyl_factory_test(PetylTokenFactory, venture_template, base_token_template, white_list_template):
-#     petyl_factory = PetylTokenFactory.deploy({"from": accounts[0]})
-#     petyl_factory.initPetylTokenFactory(petyl_venture, white_list_template, 0, {"from": accounts[0]})
-#     assert petyl_factory.numberOfChildren( {'from': accounts[0]}) == 0 
-#     return petyl_factory
+# def vote_token(PetylBaseToken, petyl_factory):
+
+#     token_owner = accounts[0]
+#     name = 'PETYL TOKEN'
+#     symbol = 'PTYL'
+#     default_operators = [ZERO_ADDRESS]
+#     burn_operator = ZERO_ADDRESS
+#     controller = ZERO_ADDRESS
+#     initial_supply = 0
+
+#     tx = petyl_factory.deployBaseToken(token_owner,  name,symbol, default_operators, burn_operator, initial_supply,{'from': accounts[0]})
+#     vote_token = PetylBaseToken.at(tx.return_value)
+#     vote_token.addController(controller, {'from': token_owner})
+
+#     return vote_token
+
 
 # @pytest.fixture(scope='module', autouse=True)
-# def base_token(PetylBaseToken, erc1820_registry):
+# def token_vote(PetylTokenVote, members_lib, proposals_lib, vote_token):
+#     token_vote = PetylTokenVote.deploy({"from": accounts[0]})
+#     vote_token.setMintOperator(token_vote, True, {"from": accounts[0]})
 
-#     name = 'BASE TOKEN'
-#     symbol = 'BTN'
-#     default_operators = accounts[2:4]
-#     burn_operator = accounts[4]
-#     controller = accounts[5]
-#     initial_supply = '1000 ether'
-#     base_token = PetylBaseToken.deploy({'from': accounts[0]})
-#     base_token.initBaseToken(accounts[0], name,
-#                                   symbol,
-#                                   default_operators,
-#                                   burn_operator,
-#                                   initial_supply,
-#                                   {'from': accounts[0]})
+#     token_vote.initPetylVote(vote_token,"Flowers",VOTE_TOKENS, VOTE_TOKENS, {"from": accounts[0]})
+#     token_vote.initAddMember("Rose", accounts[0], {"from": accounts[0]})
+#     token_vote.initAddMember("Tulip", accounts[1], {"from": accounts[0]})
+#     token_vote.initialisationComplete({"from": accounts[0]})
+#     return token_vote
 
-#     base_token.addController(controller, {'from': accounts[0]})
 
-#     return base_token
+##############################################
+# Auction
+##############################################
+
+@pytest.fixture(scope='module', autouse=True)
+def auction_token(PetylBaseToken, petyl_factory):
+
+    token_owner = accounts[0]
+    name = 'PETYL TOKEN'
+    symbol = 'PTYL'
+    default_operators = [ZERO_ADDRESS]
+    burn_operator = ZERO_ADDRESS
+    controller = ZERO_ADDRESS
+    initial_supply = 0
+
+    tx = petyl_factory.deployBaseToken(token_owner,  name,symbol, default_operators, burn_operator, initial_supply,{'from': accounts[0]})
+    auction_token = PetylBaseToken.at(tx.return_value)
+    auction_token.addController(controller, {'from': token_owner})
+
+    return auction_token
+
+
+
+@pytest.fixture(scope='module', autouse=True)
+def dutch_auction(PetylDutchAuction):
+    startDate = rpc.time() +10
+    endDate = startDate + 50000
+    startPrice = 100 * TENPOW18
+    reservePrice = 1 * TENPOW18
+    wallet = accounts[1]
+
+    dutch_auction = PetylDutchAuction.deploy({'from': accounts[0]})
+    dutch_auction.initPetylAuction(AUCTION_TOKENS, startDate, endDate, startPrice, reservePrice, wallet, {"from": accounts[0]})
+    rpc.sleep(10)
+    return dutch_auction

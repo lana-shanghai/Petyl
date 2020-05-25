@@ -14,7 +14,7 @@ interface IBaseToken  {
     // Additional permissioning
     //function addController(address _controller) external;
     function addDefaultOperators(address _operator) external;  // AG To Do - Check permissioning
-    function setRegulator(address _regulator) external;
+    function setTokenRules(address _rules) external;
     function setBurnOperator(address _burnOperator, bool _status) external;
     function setMintOperator(address _mintOperator, bool _status) external;
 
@@ -42,7 +42,7 @@ interface IBaseToken  {
     function operatorMint(address from, uint256 amount, bytes calldata data, bytes calldata operatorData) external;
     // function operatorBurn(address from, uint256 amount, bytes calldata data, bytes calldata operatorData) external;
 
-    event SetRegulator(address indexed controller, address indexed regulator);
+    event SetTokenRules(address indexed controller, address indexed rules);
     event SetBurnOperator(address indexed controller, address indexed burnOperator, bool status);
     event SetMintOperator(address indexed controller, address indexed mintOperator, bool status);
 

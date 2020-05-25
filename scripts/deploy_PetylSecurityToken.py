@@ -36,9 +36,9 @@ def deploy_white_list_template():
     white_list_template = WhiteList.deploy({"from": accounts[0]})
     return white_list_template
 
-def deploy_token_regulator( ):
-    token_regulator = PetylTokenRegulator.deploy({'from': accounts[0]})
-    return token_regulator
+def deploy_token_rules( ):
+    token_rules = PetylTokenRules.deploy({'from': accounts[0]})
+    return token_rules
 
 def deploy_petyl_factory(venture_template, base_token_template):
     petyl_factory = PetylTokenFactory.deploy({"from": accounts[0]})
@@ -52,7 +52,7 @@ def deploy_whitelist_factory( white_list_template):
     assert whitelist_factory.numberOfChildren( {'from': accounts[0]}) == 0 
     return whitelist_factory
 
-def deploy_regulated_token(petyl_factory, token_regulator):
+def deploy_regulated_token(petyl_factory, token_rules):
     token_owner = accounts[0]
     name = 'REGULATED TOKEN'
     symbol = 'RTN'
@@ -66,10 +66,10 @@ def deploy_regulated_token(petyl_factory, token_regulator):
     # event BaseTokenDeployed(address indexed owner, address indexed addr, address baseToken, uint256 fee);
 
     regulated_token.addController(controller, {'from': accounts[0]})
-    tx = token_regulator.registerToken(regulated_token, {'from': accounts[0]}) 
-    tx = regulated_token.setRegulator(token_regulator, {'from': accounts[0]})
-    assert 'SetRegulator' in tx.events
-    assert tx.events['SetRegulator'] == {'controller': accounts[0], 'regulator': token_regulator}
+    tx = token_rules.registerToken(regulated_token, {'from': accounts[0]}) 
+    tx = regulated_token.setTokenRules(token_rules, {'from': accounts[0]})
+    assert 'SetTokenRules' in tx.events
+    assert tx.events['SetTokenRules'] == {'controller': accounts[0], 'rules': token_rules}
     return regulated_token
 
 
@@ -120,8 +120,8 @@ def main():
     #venture_template = deploy_venture_template()
     white_list_template = web3.toChecksumAddress(0x71F175F6FFa58E4b78f4ef0EdCFEbAB934C0C809) 
     # white_list_template = deploy_white_list_template()
-    token_regulator = web3.toChecksumAddress(0xDaA29B5E2C23029D411314777F98315Dd11F2335)  
-    # token_regulator = deploy_token_regulator()
+    token_rules = web3.toChecksumAddress(0xDaA29B5E2C23029D411314777F98315Dd11F2335)  
+    # token_rules = deploy_token_rules()
 
     # petyl_factory = deploy_petyl_factory(venture_template, base_token_template) 
     petyl_factory = PetylTokenFactory.at(web3.toChecksumAddress(0x1Ff271BD00e192397fBC65cD95668dD9E7A4f171)) 
@@ -129,7 +129,7 @@ def main():
     # whitelist_factory = deploy_whitelist_factory( white_list_template)
     whitelist_factory =  WhiteListFactory.at(web3.toChecksumAddress(0x52Bb89399F4d137D7cA2a8bc909C7F5cdFA0D688)) 
 
-    # regulated_token = deploy_regulated_token(petyl_factory, token_regulator)
+    # regulated_token = deploy_regulated_token(petyl_factory, token_rules)
     # petyl_venture = deploy_petyl_venture(petyl_factory, regulated_token)
     white_list = deploy_whitelist(whitelist_factory)
 
@@ -160,8 +160,8 @@ def main():
 # Transaction sent: 0x3add09fb7262509fd969df13d6ec5a6d2fd345b1f751c6ab7dc62267132c5c1e
 #   Gas price: 1.0 gwei   Gas limit: 1523988
 # Waiting for confirmation...
-#   PetylTokenRegulator.constructor confirmed - Block: 7823038   Gas used: 1523988 (100.00%)
-#   PetylTokenRegulator deployed at: 0x657ED9608218cbbAd40cE9D15C60a0494fd228fd
+#   PetylTokenRules.constructor confirmed - Block: 7823038   Gas used: 1523988 (100.00%)
+#   PetylTokenRules deployed at: 0x657ED9608218cbbAd40cE9D15C60a0494fd228fd
 
 # Transaction sent: 0x2494788b18efbae6c42b260c8386819493dc243cbe3b27b47b0228429c6e6bbc
 #   Gas price: 1.0 gwei   Gas limit: 1103980

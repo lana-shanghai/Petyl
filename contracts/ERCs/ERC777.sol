@@ -3,7 +3,7 @@ pragma solidity ^0.6.2;
 import "../../interfaces/IERC777.sol";
 import "../../interfaces/IERC777Recipient.sol";
 import "../../interfaces/IERC777Sender.sol";
-import "../../interfaces/IERC777Regulator.sol";
+import "../../interfaces/IERC777TokenRules.sol";
 import "../../interfaces/IERC20.sol";
 import "../../interfaces/IBaseToken.sol";
 import "../../interfaces/IERC1820Registry.sol";

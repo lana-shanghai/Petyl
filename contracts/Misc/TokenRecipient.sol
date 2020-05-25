@@ -19,9 +19,11 @@ import "../Misc/Owned.sol";
 import "../ERCs/ERC1820Implementer.sol";
 
 
-abstract PetylTokenRecipient is ERC1820Implementer, IERC777Recipient, Owned {
+abstract TokenRecipient is ERC1820Implementer, IERC777Recipient, Owned {
 
     bool private allowTokensReceived;
+
+    // TODO: AG to set this as a constant hash to save gas
     bytes32 constant ERC777TokensRecipientHash = keccak256("ERC777TokensRecipient");
     bytes32 constant ERC1820_ACCEPT_MAGIC = keccak256("ERC1820_ACCEPT_MAGIC");
 

@@ -8,7 +8,7 @@ pragma solidity ^0.6.2;
  * @title IERC777Sender
  * @dev ERC777TokensSender interface
  */
-interface IERC777Regulator {
+interface IERC777TokenRules {
     function tokensToTransfer(
         bytes32 partition,
         address operator,

@@ -4,12 +4,7 @@ from brownie.network.transaction import TransactionReceipt
 from brownie.convert import to_address
 import pytest
 from brownie import Contract
-
-
-ERC777_INTERFACE_HASH = '0xac7fbab5f54a3ca8194167523c6753bfeb96a445279294b6125b68cce2177054'
-ERC20_TOKENS_INTERFACE_HASH = '0xaea199e31a596269b42cdafd93407f14436db6e4cad65417994c2eb37381e05a'
-ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
-ERC1820_ACCEPT_MAGIC = '0xa2ef4600d742022d532d4747cb3547474667d6f13804902513b2ec01c848f4b4'
+from settings import *
 
 
 # reset the chain after every test case
@@ -46,9 +41,9 @@ def test_erc777_send(base_token):
     base_token.send(accounts[1], '20 ether', user_data, {'from': accounts[0]})
     assert base_token.balanceOf(accounts[0]) == '980 ether'
     assert base_token.balanceOf(accounts[1]) == '20 ether'
-    base_token.send(accounts[7], '10 ether', user_data, {'from': accounts[1]})
-    assert base_token.balanceOf(accounts[1]) == '10 ether'
-    assert base_token.balanceOf(accounts[7]) == '10 ether'
+    base_token.send(accounts[7], "10 ether", user_data, {'from': accounts[1]})
+    assert base_token.balanceOf(accounts[1]) == "10 ether"
+    assert base_token.balanceOf(accounts[7]) == "10 ether"
 
 
 def test_erc777_granularity(base_token):
@@ -60,7 +55,7 @@ def test_erc777_operator_send(base_token):
 
     tx = base_token.operatorSend(accounts[0], accounts[1], '15 ether', user_data, operator_data,  {'from': accounts[2]})
 
-    assert base_token.balanceOf(accounts[0]) == '985 ether'
+    assert base_token.balanceOf(accounts[0]) == "985 ether"
     assert base_token.balanceOf(accounts[1]) == '15 ether'
 
     assert 'Sent' in tx.events
@@ -135,8 +130,8 @@ def test_burn(base_token):
     data = 'Burn 990 ether from accounts[0]'.encode()
     tx = base_token.burn('990 ether', data, {'from': accounts[0]})
 
-    assert base_token.balanceOf(accounts[0]) == '10 ether'
-    assert base_token.totalSupply() == '10 ether'
+    assert base_token.balanceOf(accounts[0]) == "10 ether"
+    assert base_token.totalSupply() == "10 ether"
 
     # ERC20 Transfer event to 0x0
     assert 'Transfer' in tx.events
@@ -163,8 +158,8 @@ def test_burn_operator(base_token):
 
     tx = base_token.operatorBurn(accounts[0], '990 ether', data, operator_data, {'from': accounts[4]})
 
-    assert base_token.balanceOf(accounts[0]) == '10 ether'
-    assert base_token.totalSupply() == '10 ether'
+    assert base_token.balanceOf(accounts[0]) == "10 ether"
+    assert base_token.totalSupply() == "10 ether"
 
     # ERC20 Transfer event to 0x0
     assert 'Transfer' in tx.events

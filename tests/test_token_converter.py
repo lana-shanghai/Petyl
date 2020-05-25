@@ -3,8 +3,7 @@ from brownie.network.transaction import TransactionReceipt
 from brownie.convert import to_address
 import pytest
 from brownie import Contract
-
-ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
+from settings import *
 
 
 # reset the chain after every test case
@@ -13,7 +12,7 @@ def isolation(fn_isolation):
     pass
 
 def test_init_token_converter(token_converter):
-    assert token_converter.canConvert(accounts[0], accounts[0], accounts[0], '2 ether', {'from': accounts[0]}) == True
+    assert token_converter.canConvert(accounts[0], accounts[0], accounts[0], "2 ether", {'from': accounts[0]}) == True
 
 
 def test_token_conversion(token_converter, base_token, regulated_token):
@@ -22,9 +21,9 @@ def test_token_conversion(token_converter, base_token, regulated_token):
 
     tx1 = regulated_token.setBurnOperator(token_converter, True, {'from': accounts[0]})
     tx2 = base_token.setMintOperator(token_converter, True, {'from': accounts[0]})
-    token_converter.convertToken(accounts[0],regulated_token, base_token, '15 ethers', '0x'+user_data.hex(), '0x'+operator_data.hex(), {'from': accounts[0]})
-    assert regulated_token.balanceOf(accounts[0]) == '485 ether'
-    assert base_token.balanceOf(accounts[0]) == '1015 ether'
+    token_converter.convertToken(accounts[0],regulated_token, base_token, "15 ethers", '0x'+user_data.hex(), '0x'+operator_data.hex(), {'from': accounts[0]})
+    assert regulated_token.balanceOf(accounts[0]) == "485 ether"
+    assert base_token.balanceOf(accounts[0]) == "1015 ether"
 
 
 # def test_token_converter_canConvert_no_value(token_converter):

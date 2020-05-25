@@ -5,7 +5,7 @@ import "../Misc/Owned.sol";
 import "../ERCs/ERC1820Implementer.sol";
 
 
-abstract PetylTokenSender is IERC777Sender, ERC1820Implementer, Owned {
+abstract TokenSender is IERC777Sender, ERC1820Implementer, Owned {
 
     bool private allowTokensToSend;
     bytes32 constant ERC777TokensSenderHash = keccak256("ERC777TokensSender");
