@@ -15,7 +15,7 @@ pragma solidity ^0.6.2;
 // ----------------------------------------------------------------------------
 
 import "../../interfaces/IERC777.sol";
-import "../../interfaces/IERC777Regulator.sol";
+import "../../interfaces/IERC777TokenRules.sol";
 import "../../interfaces/IERC777Recipient.sol";
 import "../../interfaces/IERC777Sender.sol";
 import "../Misc/Controlled.sol";
@@ -25,7 +25,7 @@ import "../ERCs/ERC1820Implementer.sol";
 import "../../interfaces/IERC1820Registry.sol";
 
 
-contract PetylTokenRegulator  is IERC777Sender,IERC777Recipient,  Controlled , Context, ERC1820Implementer, CanSendCodes  {
+contract PetylTokenRules is IERC777Sender,IERC777Recipient,  Controlled , Context, ERC1820Implementer, CanSendCodes  {
 
     event TokensToSendCalled(
         address operator,
@@ -54,8 +54,8 @@ contract PetylTokenRegulator  is IERC777Sender,IERC777Recipient,  Controlled , C
     bool public allowTokensToSend;  // AG: Private
     bool public allowTokensToReceive;  // AG: Private
 
-    // keccak256("ERC777TokensRegulator")
-    bytes32 constant private TOKENS_REGULATOR_INTERFACE_HASH =
+    // keccak256("ERC777TokenRules")
+    bytes32 constant private TOKEN_RULES_INTERFACE_HASH =
         0xc4a4c123287cf7b0d8046a21e081e4b2801e57af59a2546c99adf112443f5012;
 
     // keccak256("ERC777Token")
@@ -80,7 +80,7 @@ contract PetylTokenRegulator  is IERC777Sender,IERC777Recipient,  Controlled , C
 
 
     function registerToken(address account) public {  // AG Permissioned or public ?
-        _registerInterfaceForAddress(TOKENS_REGULATOR_INTERFACE_HASH, account);
+        _registerInterfaceForAddress(TOKEN_RULES_INTERFACE_HASH, account);
         _registerInterfaceForAddress(TOKENS_SENDER_INTERFACE_HASH, account);
         _registerInterfaceForAddress(TOKENS_RECIPIENT_INTERFACE_HASH, account);
     }
@@ -132,7 +132,7 @@ contract PetylTokenRegulator  is IERC777Sender,IERC777Recipient,  Controlled , C
         // solhint-disable-next-line no-unused-vars
         (byte CanSendCode, bytes32 data32, bytes32 partition) = _canTransfer('',_from,_to, _value, _userData, _operatorData);
         require(data32 != partition, "Test, remove this");   // AG Test, remove this
-        require((CanSendCode != TRANSFER_BLOCKED_TOKEN_GRANULARITY), "Transfer not allowed by regulator");
+        require((CanSendCode != TRANSFER_BLOCKED_TOKEN_GRANULARITY), "Transfer not allowed by rules");
         require((CanSendCode != TRANSFER_BLOCKED_RECEIVER_NOT_ELIGIBLE), "Transfer Blocked - Receiver not eligible");
 
         // AG To Do: Push events to token contract, then to 1400 token.
@@ -345,7 +345,7 @@ contract PetylTokenRegulator  is IERC777Sender,IERC777Recipient,  Controlled , C
 
     // // solhint-disable-next-line no-unused-vars
     // function canImplementInterfaceForAddress(address addr, bytes32 interfaceHash) public view returns(bytes32) {
-    //     require(addr != address(0) && (interfaceHash == TOKENS_REGULATOR_INTERFACE_HASH || interfaceHash == TOKENS_SENDER_INTERFACE_HASH || interfaceHash == TOKENS_RECIPIENT_INTERFACE_HASH));
+    //     require(addr != address(0) && (interfaceHash == TOKEN_RULES_INTERFACE_HASH || interfaceHash == TOKENS_SENDER_INTERFACE_HASH || interfaceHash == TOKENS_RECIPIENT_INTERFACE_HASH));
     //     return keccak256("ERC1820_ACCEPT_MAGIC");
     // }
 

@@ -15,7 +15,7 @@ import "../Misc/SafeMath.sol";
 
 
 
-contract PetylDistributionToken is PetylBaseToken {
+contract PetylDistributeEth is PetylBaseToken {
 
     using SafeMath for uint256;
 
@@ -23,7 +23,6 @@ contract PetylDistributionToken is PetylBaseToken {
     // Distributions
     bool public acceptEth;
     uint256 constant pointMultiplier = 10e32;
-    IERC20 public distributionTokenAddress;
     uint256 public totalDistributionPoints;
     uint256 public totalUnclaimedDistributions;
 
