@@ -7,9 +7,10 @@ pragma solidity ^0.6.2;
 // Deployed to : {TBA}
 //
 // Enjoy.
-//
-// (c) Adrian Guerrera / Deepyr Pty Ltd for Petyl. The MIT Licence.
+//                                                          
+// (c) Adrian Guerrera.  MIT Licence.                            
 // ----------------------------------------------------------------------------
+
 import "./PetylBaseToken.sol";
 import "../Misc/SafeMath.sol";
 

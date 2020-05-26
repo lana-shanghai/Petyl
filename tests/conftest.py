@@ -277,14 +277,14 @@ def auction_token(PetylBaseToken, petyl_factory):
 
 
 @pytest.fixture(scope='module', autouse=True)
-def dutch_auction(PetylDutchAuction):
+def dutch_auction(PetylDutchAuction, auction_token):
     startDate = rpc.time() +10
-    endDate = startDate + 50000
-    startPrice = 100 * TENPOW18
-    reservePrice = 1 * TENPOW18
+    endDate = startDate + AUCTION_TIME
     wallet = accounts[1]
 
     dutch_auction = PetylDutchAuction.deploy({'from': accounts[0]})
-    dutch_auction.initPetylAuction(AUCTION_TOKENS, startDate, endDate, startPrice, reservePrice, wallet, {"from": accounts[0]})
+    dutch_auction.initDutchAuction(auction_token, AUCTION_TOKENS, startDate, endDate, AUCTION_START_PRICE, AUCTION_RESERVE, wallet, {"from": accounts[0]})
+    auction_token.setMintOperator(dutch_auction, True, {"from": accounts[0]})
+    assert dutch_auction.auctionPrice() == AUCTION_START_PRICE
     rpc.sleep(10)
     return dutch_auction

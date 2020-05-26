@@ -24,6 +24,7 @@ pragma solidity ^0.6.2;
 //  Authors:                                                     :
 //  * Adrian Guerrera / Deepyr Pty Ltd                           :
 //                                                               :
+//  (c) Adrian Guerrera.  MIT Licence.                           :                                                         :
 //  Oct 20 2018                                                  :
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
