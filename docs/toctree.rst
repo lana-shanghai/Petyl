@@ -36,14 +36,16 @@ Petyl
     petyl_venture.rst
     options.rst
 
-.. .. toctree::
-..     :caption: Distribution
-..     :maxdepth: 2
+.. toctree::
+    :caption: Distribution
+    :maxdepth: 2
 
-..     minting.rst
-..     crowdsale.rst
-..     dutch_auction.rst
-..     custom_sale.rst
+    dutch_auction.rst
+    .. minting.rst
+    .. custom_sale.rst
+    .. crowdsale.rst
+
+
 
 .. .. toctree::
 ..     :caption: Testing
