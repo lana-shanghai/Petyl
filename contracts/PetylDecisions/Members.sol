@@ -22,7 +22,7 @@ library Members {
         require(!self.initialised);
         self.initialised = true;
     }
-    function isInitialised(Data storage self) public returns (bool) {
+    function isInitialised(Data storage self) public view returns (bool) {
         return self.initialised;
     }
     function isMember(Data storage self, address _address) public view returns (bool) {

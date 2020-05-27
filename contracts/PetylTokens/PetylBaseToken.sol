@@ -71,7 +71,7 @@ contract PetylBaseToken is IBaseToken, ERC777, CanSendCodes  {
     }
 
 
-    function getPartitionId () public returns (bytes32) {
+    function getPartitionId () public view returns (bytes32) {
         return partitionId;
     }
 

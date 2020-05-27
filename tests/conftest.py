@@ -257,6 +257,27 @@ def petyl_vote(PetylVote, members_lib, proposals_lib, petyl_token):
 # Auction
 ##############################################
 
+
+
+@pytest.fixture(scope='module', autouse=True)
+def currency_token(PetylBaseToken, petyl_factory):
+
+    token_owner = accounts[0]
+    name = 'CURRENCY TOKEN'
+    symbol = 'TUSD'
+    default_operators = [ZERO_ADDRESS]
+    burn_operator = ZERO_ADDRESS
+    controller = ZERO_ADDRESS
+    initial_supply = "10000000 ether"
+
+    tx = petyl_factory.deployBaseToken(token_owner,  name,symbol, default_operators, burn_operator, initial_supply,{'from': accounts[0]})
+    currency_token = PetylBaseToken.at(tx.return_value)
+    currency_token.addController(controller, {'from': token_owner})
+
+    return currency_token
+
+
+
 @pytest.fixture(scope='module', autouse=True)
 def auction_token(PetylBaseToken, petyl_factory):
 
@@ -275,15 +296,50 @@ def auction_token(PetylBaseToken, petyl_factory):
     return auction_token
 
 
+@pytest.fixture(scope='module', autouse=True)
+def dutch_auction_template(PetylDutchAuction):
+    dutch_auction_template = PetylDutchAuction.deploy({'from': accounts[0]})
+    return dutch_auction_template
+
+
 
 @pytest.fixture(scope='module', autouse=True)
-def dutch_auction(PetylDutchAuction, auction_token):
+def auction_factory(PetylAuctionFactory, dutch_auction_template):
+    auction_factory = PetylAuctionFactory.deploy({"from": accounts[0]})
+    auction_factory.initPetylAuctionFactory(dutch_auction_template, 0, {"from": accounts[0]})
+    assert auction_factory.numberOfAuctions( {'from': accounts[0]}) == 0 
+
+    return auction_factory
+
+
+
+@pytest.fixture(scope='module', autouse=True)
+def dutch_auction(PetylDutchAuction, auction_factory, auction_token):
     startDate = rpc.time() +10
     endDate = startDate + AUCTION_TIME
     wallet = accounts[1]
 
-    dutch_auction = PetylDutchAuction.deploy({'from': accounts[0]})
-    dutch_auction.initDutchAuction(auction_token, AUCTION_TOKENS, startDate, endDate, AUCTION_START_PRICE, AUCTION_RESERVE, wallet, {"from": accounts[0]})
+    tx = auction_factory.deployDutchAuction(auction_token, AUCTION_TOKENS, startDate, endDate,ETH_ADDRESS, AUCTION_START_PRICE, AUCTION_RESERVE, wallet, {"from": accounts[0]})
+    dutch_auction = PetylDutchAuction.at(tx.return_value)
+    auction_token.setMintOperator(dutch_auction, True, {"from": accounts[0]})
+    assert dutch_auction.auctionPrice() == AUCTION_START_PRICE
+    rpc.sleep(10)
+    return dutch_auction
+
+
+
+@pytest.fixture(scope='module', autouse=True)
+def dutch_auction_erc20(PetylDutchAuction, auction_factory, auction_token, currency_token):
+    startDate = rpc.time() +10
+    endDate = startDate + AUCTION_TIME
+    wallet = accounts[1]
+
+    tx = currency_token.transfer(accounts[2], '1000 ether', {'from': accounts[0]})
+    tx = currency_token.transfer(accounts[3], '1000 ether', {'from': accounts[0]})
+
+    tx = auction_factory.deployDutchAuction(auction_token, AUCTION_TOKENS, startDate, endDate,currency_token, AUCTION_START_PRICE, AUCTION_RESERVE, wallet, {"from": accounts[0]})
+    dutch_auction = PetylDutchAuction.at(tx.return_value)
+
     auction_token.setMintOperator(dutch_auction, True, {"from": accounts[0]})
     assert dutch_auction.auctionPrice() == AUCTION_START_PRICE
     rpc.sleep(10)
