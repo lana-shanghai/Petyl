@@ -1,4 +1,4 @@
-pragma solidity ^0.6.2;
+pragma solidity ^0.6.9;
 
 interface IERC777 {
     function name() external view returns (string memory);

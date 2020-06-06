@@ -1,24 +1,19 @@
-pragma solidity ^0.6.2;
+pragma solidity ^0.6.9;
 
 
-import "../Misc/Owned.sol";
-import "../Misc/SafeMath.sol";
-import "../Misc/CloneFactory.sol";
-import "../../interfaces/IERC20.sol";
+import "../Utils/Owned.sol";
+import "../Utils/CloneFactory.sol";
 import "../../interfaces/IPetylToken.sol";
 import "../../interfaces/IPetylContract.sol";
 import "../../interfaces/IOwned.sol";
-
+import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 // ----------------------------------------------------------------------------
-// Petyl Token Factory
-//
-// Authors:
-// * Adrian Guerrera / Deepyr Pty Ltd
-//
-// Appropriated from BokkyPooBah's Fixed Supply Token 👊 Factory
-//
+// From BokkyPooBah's Fixed Supply Token 👊 Factory
+// https://github.com/bokkypoobah/FixedSupplyTokenFactory
 // ----------------------------------------------------------------------------
+// SPDX-License-Identifier: MIT
 
 contract PetylTokenFactory is  Owned, CloneFactory {
     using SafeMath for uint;

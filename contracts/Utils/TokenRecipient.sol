@@ -1,4 +1,4 @@
-pragma solidity ^0.6.2;
+pragma solidity ^0.6.9;
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,7 +15,7 @@ pragma solidity ^0.6.2;
 // ----------------------------------------------------------------------------
 
 import "../../interfaces/IERC777Recipient.sol";
-import "../Misc/Owned.sol";
+import "../Utils/Owned.sol";
 import "../ERCs/ERC1820Implementer.sol";
 
 

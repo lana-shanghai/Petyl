@@ -1,9 +1,9 @@
-pragma solidity ^0.6.2;
+pragma solidity ^0.6.9;
 
 // @title ERC1644 Controller Operation  (part of the ERC1400 Security Token Standards)
 /// @dev See https://github.com/SecurityTokenStandard/EIP-Spec
 
-// import "../Misc/Controlled.sol";
+// import "../Utils/Controlled.sol";
 // import "../../interfaces/IERC1644.sol";
 
 contract ERC1644 { /* is IERC1644, Controlled */ 

@@ -1,9 +1,9 @@
-pragma solidity ^0.6.2;
+pragma solidity ^0.6.9;
 
 
-import "../Misc/Owned.sol";
-import "../Misc/SafeMath.sol";
-import "../Misc/CloneFactory.sol";
+import "../Utils/Owned.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
+import "../Utils/CloneFactory.sol";
 import "../../interfaces/IOwned.sol";
 import "../../interfaces/IERC20.sol";
 import "../../interfaces/IPetylAuction.sol";
@@ -18,6 +18,7 @@ import "../../interfaces/IPetylAuction.sol";
 // Appropriated from BokkyPooBah's Fixed Supply Token 👊 Factory
 //
 // ----------------------------------------------------------------------------
+// SPDX-License-Identifier: MIT
 
 contract PetylAuctionFactory is  Owned, CloneFactory {
     using SafeMath for uint256;

@@ -1,6 +1,6 @@
-pragma solidity ^0.6.2;
+pragma solidity ^0.6.9;
 
-import "../Misc/SafeMath.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 import "../../interfaces/IPetylToken.sol";
 import "../../interfaces/IERC20.sol";
 
@@ -14,6 +14,7 @@ import "../../interfaces/IERC20.sol";
 // (c) Adrian Guerrera.  MIT Licence.                            
 // May 26 2020                                  
 // ----------------------------------------------------------------------------
+// SPDX-License-Identifier: MIT
 
 
 contract PetylDutchAuction  {

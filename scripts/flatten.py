@@ -17,7 +17,11 @@ def flatten_contracts():
     flatten("PetylTokens/PetylBaseToken.sol", "flattened/PetylBaseToken_flattened.sol")
     flatten("PetylTokens/PetylTokens.sol", "flattened/PetylTokens_flattened.sol")
     flatten("PetylTokens/PetylTokenFactory.sol", "flattened/PetylTokenFactory_flattened.sol")
-    flatten("Misc/WhiteListFactory.sol", "flattened/WhiteListFactory_flattened.sol")
-    flatten("Misc/WhiteList.sol", "flattened/WhiteList_flattened.sol")
+    flatten("Utils/WhiteListFactory.sol", "flattened/WhiteListFactory_flattened.sol")
+    flatten("Utils/WhiteList.sol", "flattened/WhiteList_flattened.sol")
+    flatten("Utils/WhiteList.sol", "flattened/WhiteList_flattened.sol")
+    flatten("PetylAuctions/PetylAuctionFactory.sol", "flattened/PetylAuctionFactory_flattened.sol")
+    flatten("PetylAuctions/PetylDutchAuction.sol", "flattened/PetylDutchAuction_flattened.sol")
+
 
 flatten_contracts()

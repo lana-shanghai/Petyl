@@ -1,4 +1,4 @@
-pragma solidity ^0.6.2;
+pragma solidity ^0.6.9;
 
 // ----------------------------------------------------------------------------
 // Deepyr's Dynamic Security Token
@@ -8,11 +8,13 @@ pragma solidity ^0.6.2;
 //
 // Oct 20 2018
 // ----------------------------------------------------------------------------
+// SPDX-License-Identifier: MIT
+
 
 import "../../interfaces/IPetylConv.sol";
 import "../../interfaces/IBaseToken.sol";
 import "../../interfaces/IERC777.sol";
-import "../Misc/SafeMath.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 
 
 contract PetylTokenConverter is IPetylConv {

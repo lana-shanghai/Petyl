@@ -1,5 +1,6 @@
 pragma solidity ^0.6.9;
 
+
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 //:::::::::: @#:::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -18,7 +19,7 @@ pragma solidity ^0.6.9;
 //:::::01100100:01100101:01100101:01110000:01111001:01110010::::::
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 //                                                               :
-//  Petyl Distribution Token (PDT)                               :
+//  Petyl Harvest Token (PHT)                                    :
 //  https://www.petyl.com                                        :
 //                                                               :
 //  Authors:                                                     :
@@ -30,36 +31,36 @@ pragma solidity ^0.6.9;
 // SPDX-License-Identifier: MIT
 
 
+
 import "./PetylBaseToken.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-
-
-contract PetylDistributeEth is PetylBaseToken, ReentrancyGuard  {
+contract PetylHarvestToken is PetylBaseToken, ReentrancyGuard  {
 
     using SafeMath for uint256;
 
 
-    // Distributions
+    // Harvest
     bool public acceptEth;
     uint256 constant pointMultiplier = 10e32;
-    uint256 public totalDistributionPoints;
-    uint256 public totalUnclaimedDistributions;
+    IERC20 public harvestTokenAddress;
+    uint256 public totalHarvestPoints;  
+    uint256 public totalUnclaimedHarvest;
 
-    mapping(address => uint256) public lastEthPoints;
-    mapping(address => uint256) public unclaimedDistributionByAccount;
+    mapping(address => uint256) public lastEthPoints;  
+    mapping(address => uint256) public unclaimedHarvestByAccount;
 
-    // Distribution Events
-    event DistributionReceived(uint256 time, address indexed sender, uint256 amount);
-    event WithdrawalDistributions(address indexed holder, uint256 amount);
+    // Harvest Events
+    event HarvestReceived(uint256 time, address indexed sender, uint256 amount);
+    event WithdrawalHarvest(address indexed holder, uint256 amount);
     event SetAcceptEth(bool scceptEth);
 
 
     //------------------------------------------------------------------------
     // Constructor
     //------------------------------------------------------------------------
-    function initDistributionToken (
+    function initHarvestToken (
         address _tokenOwner,
         string memory _name,
         string memory _symbol,
@@ -94,29 +95,29 @@ contract PetylDistributeEth is PetylBaseToken, ReentrancyGuard  {
         _updateAccount(from);
         
         // Set last points for sending to new accounts.
-        if (balanceOf(to) == 0 && lastEthPoints[to] == 0 && totalDistributionPoints > 0) {
-          lastEthPoints[to] = totalDistributionPoints;
+        if (balanceOf(to) == 0 && lastEthPoints[to] == 0 && totalHarvestPoints > 0) {
+          lastEthPoints[to] = totalHarvestPoints;
         }
         _updateAccount(to);
     }
 
 
     //------------------------------------------------------------------------
-    // Distributions Owed
+    // Harvest Owed
     //------------------------------------------------------------------------
 
-    function distributionsOwing(address _account) external view returns(uint256) {
-        return _distributionsOwing(_account);
+    function harvestOwing(address _account) external view returns(uint256) {
+        return _harvestOwing(_account);
     }
-    function _distributionsOwing(address _account) internal view returns(uint256) {
-        uint256 newDistributionPoints = totalDistributionPoints.sub(lastEthPoints[_account]);
+    function _harvestOwing(address _account) internal view returns(uint256) {
+        uint256 newHarvestPoints = totalHarvestPoints.sub(lastEthPoints[_account]);
         // Returns amount ETH owed from current token balance
-        return (balanceOf(_account) * newDistributionPoints) / pointMultiplier;
+        return (balanceOf(_account) * newHarvestPoints) / pointMultiplier;
     }
 
 
     //------------------------------------------------------------------------
-    // Distributions: Token Transfer Accounting
+    // Harvest: Token Transfer Accounting
     //------------------------------------------------------------------------
 
      function updateAccount(address _account) external {
@@ -125,31 +126,31 @@ contract PetylDistributeEth is PetylBaseToken, ReentrancyGuard  {
 
     function _updateAccount(address _account) internal {
        // Check if new deposits have been made since last withdraw
-      if (lastEthPoints[_account] < totalDistributionPoints ){
-        uint256 _owing = _distributionsOwing(_account);
-        // Increment internal distributions counter to new amount owed
+      if (lastEthPoints[_account] < totalHarvestPoints ){
+        uint256 _owing = _harvestOwing(_account);
+        // Increment internal harvest counter to new amount owed
         if (_owing > 0) {
-            unclaimedDistributionByAccount[_account] = unclaimedDistributionByAccount[_account].add(_owing);
-            lastEthPoints[_account] = totalDistributionPoints;
+            unclaimedHarvestByAccount[_account] = unclaimedHarvestByAccount[_account].add(_owing);
+            lastEthPoints[_account] = totalHarvestPoints;
         }
       }
     }
 
 
     //------------------------------------------------------------------------
-    // Distributions: Token Deposits
+    // Harvest: Token Deposits
     //------------------------------------------------------------------------
 
-   function depositDistributions() external payable nonReentrant {
+   function depositHarvest() external payable {
         require(msg.value > 0);
-        _depositDistributions(msg.value);
+        _depositHarvest(msg.value);
     }
 
-    function _depositDistributions(uint256 _amount) internal {
+    function _depositHarvest(uint256 _amount) internal {
       // Convert deposit into points
-        totalDistributionPoints += (_amount * pointMultiplier ) / totalSupply();
-        totalUnclaimedDistributions += _amount;
-        emit DistributionReceived(now, msg.sender, _amount);
+        totalHarvestPoints += (_amount * pointMultiplier ) / totalSupply();
+        totalUnclaimedHarvest += _amount;
+        emit HarvestReceived(now, msg.sender, _amount);
     }
 
     function getLastEthPoints(address _account) external view returns (uint256) {
@@ -160,40 +161,40 @@ contract PetylDistributeEth is PetylBaseToken, ReentrancyGuard  {
 
 
     //------------------------------------------------------------------------
-    // Distributions: Claim accrued 
+    // Harvest: Claim accrued 
     //------------------------------------------------------------------------
 
-    function withdrawDistributions () external nonReentrant {
+    function withdrawHarvest () external  {
         _updateAccount(msg.sender);
-        _withdrawDistributions(msg.sender);
+        _withdrawHarvest(msg.sender);
     }
-    function withdrawDistributionsByAccount (address payable _account) external nonReentrant {
+    function withdrawHarvestByAccount (address payable _account) external  {
         require(msg.sender == mOwner);
         _updateAccount(_account);
-        _withdrawDistributions(_account);
+        _withdrawHarvest(_account);
     }
 
-    function _withdrawDistributions(address payable _account) internal  {
+    function _withdrawHarvest(address payable _account) internal  {
         require(_account != address(0));
 
-        if (unclaimedDistributionByAccount[_account]>0) {
-          uint256 _unclaimed = unclaimedDistributionByAccount[_account];
-          totalUnclaimedDistributions = totalUnclaimedDistributions.sub(_unclaimed);
-          unclaimedDistributionByAccount[_account] = 0;
+        if (unclaimedHarvestByAccount[_account]>0) {
+          uint256 _unclaimed = unclaimedHarvestByAccount[_account];
+          totalUnclaimedHarvest = totalUnclaimedHarvest.sub(_unclaimed);
+          unclaimedHarvestByAccount[_account] = 0;
           _account.transfer(_unclaimed);
-          emit WithdrawalDistributions(_account, _unclaimed);
+          emit WithdrawalHarvest(_account, _unclaimed);
         }
     }
 
 
     // ------------------------------------------------------------------------
-    // Accept ETH deposits as distributions
+    // Accept ETH deposits as harvest
     // ------------------------------------------------------------------------
 
-    receive () external payable nonReentrant {
+    receive () external payable {
         require(acceptEth);
         require(msg.value > 0);
-        _depositDistributions(msg.value);
+        _depositHarvest(msg.value);
     }
 
 

@@ -1,4 +1,4 @@
-pragma solidity ^0.6.2;
+pragma solidity ^0.6.9;
 
 interface IERC1643 {
     function getDocument(bytes32 _name) external view returns (string memory, bytes32, uint256);

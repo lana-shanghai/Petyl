@@ -1,4 +1,4 @@
-pragma solidity ^0.6.2;
+pragma solidity ^0.6.9;
 
 // ----------------------------------------------------------------------------
 // Deepyr's Dynamic Security Token (DST)
@@ -10,10 +10,10 @@ pragma solidity ^0.6.2;
 // ----------------------------------------------------------------------------
 
 // Import Contracts
-import "../Misc/SafeMath.sol";
-import "../Misc/Controlled.sol";
-import "../Misc/CanSendCodes.sol";
-import "../Misc/CertificateControllerMock.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
+import "../Utils/Controlled.sol";
+import "../Utils/CanSendCodes.sol";
+import "../Utils/CertificateControllerMock.sol";
 import "./ERC1643.sol";
 import "./ERC1820Implementer.sol";
 import "../../interfaces/IERC20.sol";

@@ -1,8 +1,8 @@
-pragma solidity ^0.6.2;
+pragma solidity ^0.6.9;
 
 
 import "./Owned.sol";
-import "./SafeMath.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 import "./CloneFactory.sol";
 import "../../interfaces/IERC20.sol";
 import "../../interfaces/IOwned.sol";

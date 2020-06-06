@@ -45,6 +45,8 @@ compiler:
         optimize: true
         runs: 200
         minify_source: false
+        remappings:
+          - "@openzeppelin=OpenZeppelin/openzeppelin-contracts@3.0.1"
 colors:
     key:
     value: bright blue

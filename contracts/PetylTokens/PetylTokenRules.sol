@@ -1,28 +1,45 @@
-pragma solidity ^0.6.2;
+pragma solidity ^0.6.9;
 
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// From https://github.com/0xjac/ERC777
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//:::::::::: @#:::::::::::::::::::::::::::::::::::::::::::::::::::
+//:::::::::: ##:::::::::::::::::::::::::::::::::::::::::::::::::::
+//:::::::::: ##:::::::::::::::::::::::::::::::::::::::::::::::::::
+//::::: #######::: #####::: ######:: #######: ###::: ### ##.###:::
+//::: ###.. ###: ###.. ##: ###.. ##: ###.. ## ###:: ###: ####.::::
+//::: ##:::: ##: ######### ########: ##.::: ## ###: ###: ###.:::::
+//::: ##:::: ##: ##.....:: ##.....:: ##:::: ##: ######:: ###::::::
+//::::: #######::: #####::: ######:: #######:::: ####::: ###::::::
+//::::::......::::::...::::::...:::: ##....:::::: ##::::::::::::::
+//:::::::::::::::::::::::::::::::::: ##::::::::: ##:::::::::::::::
+//:::::::::::::::::::::::::::::::::: ##:::::::: ##::::::::::::::::
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//::::::::::::::01101100:01101111:01101111:01101011:::::::::::::::
+//:::::01100100:01100101:01100101:01110000:01111001:01110010::::::
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//                                                               :
+//  Petyl Token Rules (PTR)                                      :
+//  https://www.petyl.com                                        :
+//                                                               :
+//  Authors:                                                     :
+//  * Adrian Guerrera / Deepyr Pty Ltd                           :
+//                                                               :
+//  (c) Adrian Guerrera.  MIT Licence.                           :                                                         :
+//  Oct 20 2018                                                  :
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+// SPDX-License-Identifier: MIT
 
-// ----------------------------------------------------------------------------
-// Deepyr's Dynamic Security Token
-//
-// Authors:
-// * Adrian Guerrera / Deepyr Pty Ltd
-//
-// Oct 20 2018
-// ----------------------------------------------------------------------------
 
 import "../../interfaces/IERC777.sol";
 import "../../interfaces/IERC777TokenRules.sol";
 import "../../interfaces/IERC777Recipient.sol";
 import "../../interfaces/IERC777Sender.sol";
-import "../Misc/Controlled.sol";
-import "../Misc/Context.sol";
-import "../Misc/CanSendCodes.sol";
+import "../Utils/Controlled.sol";
+import "../Utils/CanSendCodes.sol";
 import "../ERCs/ERC1820Implementer.sol";
 import "../../interfaces/IERC1820Registry.sol";
+
+import "@openzeppelin/contracts/GSN/Context.sol";
 
 
 contract PetylTokenRules is IERC777Sender,IERC777Recipient,  Controlled , Context, ERC1820Implementer, CanSendCodes  {

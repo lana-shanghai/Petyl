@@ -1,4 +1,4 @@
-pragma solidity ^0.6.2;
+pragma solidity ^0.6.9;
 
 //-----------------------------------------------------------------------------
 /// @title Interface of ERC777 standard

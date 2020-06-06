@@ -1,4 +1,4 @@
-pragma solidity ^0.6.2;
+pragma solidity ^0.6.9;
 
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -27,15 +27,16 @@ pragma solidity ^0.6.2;
 //  (c) Adrian Guerrera.  MIT Licence.                           :                                                         :
 //  Oct 20 2018                                                  :
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+// SPDX-License-Identifier: MIT
 
 
-import "../Misc/Owned.sol";
+import "../Utils/Owned.sol";
 import "../ERCs/ERC1400.sol";
 import "../../interfaces/IPetylConv.sol";
 import "../../interfaces/IERC777.sol";
 import "../../interfaces/IPetylContract.sol";
-import "../Misc/SafeMath.sol";
-import "../Misc/CloneFactory.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
+import "../Utils/CloneFactory.sol";
 import "../ERCs/ERC1643.sol";
 // import "../ERCs/ERC1644.sol";
 

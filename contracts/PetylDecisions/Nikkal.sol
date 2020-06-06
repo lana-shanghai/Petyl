@@ -1,9 +1,9 @@
-pragma solidity ^0.6.2;
+pragma solidity ^0.6.9;
 
 import "./Members.sol";
 import "./Proposals.sol";
-import "../Misc/Owned.sol";
-import "../Misc/SafeMath.sol";
+import "../Utils/Owned.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 import "../../interfaces/IPetylToken.sol";
 
 
@@ -17,9 +17,10 @@ import "../../interfaces/IPetylToken.sol";
 //
 // (c) BokkyPooBah / Bok Consulting Pty Ltd 2018. The MIT Licence.
 // ----------------------------------------------------------------------------
+// SPDX-License-Identifier: MIT
 
 
-contract PetylVote is Owned {
+contract Nikkal is Owned {
     using SafeMath for uint;
     using Members for Members.Data;
     using Proposals for Proposals.Data;

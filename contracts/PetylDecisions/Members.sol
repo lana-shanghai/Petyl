@@ -1,5 +1,6 @@
-pragma solidity ^0.6.2;
+pragma solidity ^0.6.9;
 
+// SPDX-License-Identifier: MIT
 
 
 library Members {

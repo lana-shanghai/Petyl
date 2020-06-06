@@ -1,7 +1,7 @@
-pragma solidity ^0.6.2;
+pragma solidity ^0.6.9;
 
 import "../../interfaces/IERC777Sender.sol";
-import "../Misc/Owned.sol";
+import "../Utils/Owned.sol";
 import "../ERCs/ERC1820Implementer.sol";
 
 

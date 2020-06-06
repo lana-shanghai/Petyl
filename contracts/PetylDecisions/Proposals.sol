@@ -1,9 +1,9 @@
-pragma solidity ^0.6.2;
+pragma solidity ^0.6.9;
 
 import "./Members.sol";
 
-import "../Misc/Owned.sol";
-import "../Misc/SafeMath.sol";
+import "../Utils/Owned.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 import "../../interfaces/IPetylToken.sol";
 
 
@@ -18,6 +18,7 @@ import "../../interfaces/IPetylToken.sol";
 // (c) BokkyPooBah / Bok Consulting Pty Ltd and
 // the ClubEth.App Project - 2018. The MIT Licence.
 // ----------------------------------------------------------------------------
+// SPDX-License-Identifier: MIT
 
 // ----------------------------------------------------------------------------
 // Proposals Data Structure

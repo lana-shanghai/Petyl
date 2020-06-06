@@ -1,4 +1,4 @@
-pragma solidity ^0.6.2;
+pragma solidity ^0.6.9;
 
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -27,14 +27,15 @@ pragma solidity ^0.6.2;
 // (c) Adrian Guerrera.  MIT Licence.                            :
 //                                                               :
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+// SPDX-License-Identifier: MIT
 
 
 import "../../interfaces/IBaseToken.sol";
 import "../../interfaces/IERC1820Registry.sol";
 import "../ERCs/ERC777.sol";
-import "../Misc/CanSendCodes.sol";
-import "../Misc/Controlled.sol";
-import "../Misc/CloneFactory.sol";
+import "../Utils/CanSendCodes.sol";
+import "../Utils/Controlled.sol";
+import "../Utils/CloneFactory.sol";
 
 contract PetylBaseToken is IBaseToken, ERC777, CanSendCodes  {
     event ERC20Enabled();

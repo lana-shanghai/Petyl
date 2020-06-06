@@ -1,4 +1,4 @@
-pragma solidity ^0.6.2;
+pragma solidity ^0.6.9;
 
 import "../../interfaces/IERC777.sol";
 import "../../interfaces/IERC777Recipient.sol";
@@ -8,10 +8,12 @@ import "../../interfaces/IERC20.sol";
 import "../../interfaces/IBaseToken.sol";
 import "../../interfaces/IERC1820Registry.sol";
 import "../ERCs/ERC1820Implementer.sol"; 
-import "../Misc/SafeMath.sol";
-import "../Misc/Address.sol";
-import "../Misc/Context.sol";
-import "../Misc/Controlled.sol";
+
+import "../Utils/Controlled.sol";
+
+import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
+import "@openzeppelin/contracts/GSN/Context.sol";
 
 /**
  * @dev Implementation of the {IERC777} interface.

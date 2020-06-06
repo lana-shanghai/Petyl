@@ -1,7 +1,7 @@
-pragma solidity ^0.6.2;
+pragma solidity ^0.6.9;
 
 import "../../interfaces/IERC1643.sol";
-import "../Misc/Owned.sol";
+import "../Utils/Owned.sol";
 
 /**
  * @title Standard implementation of ERC1643 Document management

@@ -1,4 +1,4 @@
-pragma solidity ^0.6.2;
+pragma solidity ^0.6.9;
 
 // @title IERC1644 Controller Operation (part of the ERC1400 Security Token Standards)
 /// @dev See https://github.com/SecurityTokenStandard/EIP-Spec
