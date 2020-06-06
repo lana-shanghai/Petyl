@@ -87,7 +87,7 @@ contract PetylTokenRules is IERC777Sender,IERC777Recipient,  Controlled , Contex
     bytes32 constant private TOKENS_RECIPIENT_INTERFACE_HASH =
         0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b;
 
-    IERC1820Registry constant internal ERC1820_REGISTRY = IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
+    IERC1820Registry constant internal _ERC1820_REGISTRY = IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
 
     constructor() public {
         allowTokensToSend = true;
@@ -216,7 +216,7 @@ contract PetylTokenRules is IERC777Sender,IERC777Recipient,  Controlled , Contex
     internal pure returns(bool) {
 
     //   // Token transfers
-    //     address tokenImplementation = ERC1820_REGISTRY.getInterfaceImplementer(_from, ERC777_TOKENS_INTERFACE_HASH);
+    //     address tokenImplementation = _ERC1820_REGISTRY.getInterfaceImplementer(_from, ERC777_TOKENS_INTERFACE_HASH);
 
     //   if((tokenImplementation != address(0)) && !IERC777(tokenImplementation).isOperatorFor(_operator, _from)) {
     //      return false; // "Transfer Blocked - Identity restriction"
@@ -226,7 +226,7 @@ contract PetylTokenRules is IERC777Sender,IERC777Recipient,  Controlled , Contex
     //   }
 
     //   // Check if token sender and reciever interfaces are being used
-    //     address senderImplementation = ERC1820_REGISTRY.getInterfaceImplementer(_from, TOKENS_SENDER_INTERFACE_HASH);
+    //     address senderImplementation = _ERC1820_REGISTRY.getInterfaceImplementer(_from, TOKENS_SENDER_INTERFACE_HASH);
 
     //   if((senderImplementation != address(0)) && !IERC777Sender(senderImplementation).canSend( _from, _to, _value, _userData, _operatorData)) {
     //      return false; // Transfer Blocked - Sender not eligible
@@ -293,7 +293,7 @@ contract PetylTokenRules is IERC777Sender,IERC777Recipient,  Controlled , Contex
     ) internal pure returns(bool) {
 
         // // Check token
-        // address tokenImplementation = ERC1820_REGISTRY.getInterfaceImplementer(_from, ERC777_TOKENS_INTERFACE_HASH);
+        // address tokenImplementation = _ERC1820_REGISTRY.getInterfaceImplementer(_from, ERC777_TOKENS_INTERFACE_HASH);
 
         // if((tokenImplementation != address(0)) && !IERC777(tokenImplementation).isOperatorFor(_operator, _from)) {
         //    return false; // "Transfer Blocked - Identity restriction"
@@ -306,7 +306,7 @@ contract PetylTokenRules is IERC777Sender,IERC777Recipient,  Controlled , Contex
         // // }
 
         // // Check if token sender and reciever interfaces are being used
-        // address receiverImplementation = ERC1820_REGISTRY.getInterfaceImplementer(_from, TOKENS_RECIPIENT_INTERFACE_HASH);
+        // address receiverImplementation = _ERC1820_REGISTRY.getInterfaceImplementer(_from, TOKENS_RECIPIENT_INTERFACE_HASH);
 
         // if((receiverImplementation != address(0)) && !IERC777Sender(receiverImplementation).canSend( _from, _to, _value, _userData, _operatorData)) {
         //    return false; // Transfer Blocked - Sender not eligible
@@ -326,7 +326,7 @@ contract PetylTokenRules is IERC777Sender,IERC777Recipient,  Controlled , Contex
     }
 
     function registerSender(address sender) public {
-        ERC1820_REGISTRY.setInterfaceImplementer(address(this), TOKENS_SENDER_INTERFACE_HASH, sender);
+        _ERC1820_REGISTRY.setInterfaceImplementer(address(this), TOKENS_SENDER_INTERFACE_HASH, sender);
     }
 
     function recipientFor(address account) public {
@@ -339,7 +339,7 @@ contract PetylTokenRules is IERC777Sender,IERC777Recipient,  Controlled , Contex
     }
 
     function registerRecipient(address recipient) public {
-        ERC1820_REGISTRY.setInterfaceImplementer(address(this), TOKENS_RECIPIENT_INTERFACE_HASH, recipient);
+        _ERC1820_REGISTRY.setInterfaceImplementer(address(this), TOKENS_RECIPIENT_INTERFACE_HASH, recipient);
     }
 
     function setShouldRevertSend(bool allowTokens) public {

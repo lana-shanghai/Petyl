@@ -212,8 +212,8 @@ def members_lib(Members):
     return members_lib
 
 @pytest.fixture(scope='module', autouse=True)
-def petyl_vote(PetylVote, members_lib, proposals_lib, petyl_token):
-    petyl_vote = PetylVote.deploy({"from": accounts[0]})
+def petyl_vote(Nikkal, members_lib, proposals_lib, petyl_token):
+    petyl_vote = Nikkal.deploy({"from": accounts[0]})
     petyl_token.setMintOperator(petyl_vote, True, {"from": accounts[0]})
 
     petyl_vote.initPetylVote(petyl_token,"Flowers",VOTE_TOKENS, {"from": accounts[0]})

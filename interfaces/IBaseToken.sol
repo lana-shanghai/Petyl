@@ -5,15 +5,15 @@ pragma solidity ^0.6.9;
 /// @dev ref. https://eips.ethereum.org/EIPS/eip-777
 //-----------------------------------------------------------------------------
 
-import "../interfaces/IERC20.sol";
-import "../interfaces/IERC777.sol";
+// import "../interfaces/IERC20.sol";
+// import "../interfaces/IERC777.sol";
 
 
 interface IBaseToken  {
 
     // Additional permissioning
     //function addController(address _controller) external;
-    function addDefaultOperators(address _operator) external;  // AG To Do - Check permissioning
+    // function addDefaultOperators(address _operator) external;  // AG To Do - Check permissioning
     function setTokenRules(address _rules) external;
     function setBurnOperator(address _burnOperator, bool _status) external;
     function setMintOperator(address _mintOperator, bool _status) external;

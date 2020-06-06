@@ -182,15 +182,15 @@ def test_burn_operator_not_enough_funds(base_token):
         base_token.operatorBurn(accounts[0], '1001 ether', data, operator_data, {'from': accounts[4]})
 
 
-def test_default_operator_add(base_token):
-    base_token.addDefaultOperators(accounts[1], {'from': accounts[0]})
+# def test_default_operator_add(base_token):
+#     base_token.addDefaultOperators(accounts[1], {'from': accounts[0]})
 
-    assert base_token.defaultOperators() == accounts[2:4] + [accounts[1]]
+#     assert base_token.defaultOperators() == accounts[2:4] + [accounts[1]]
 
 
-def test_default_operator_add_not_owner(base_token):
-    with reverts():
-        base_token.addDefaultOperators(accounts[1], {'from': accounts[1]})
+# def test_default_operator_add_not_owner(base_token):
+#     with reverts():
+#         base_token.addDefaultOperators(accounts[1], {'from': accounts[1]})
 
 
 

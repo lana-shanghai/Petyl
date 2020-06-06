@@ -15,7 +15,7 @@ def isolation(fn_isolation):
 
 
 def test_dutch_auction_erc20_totalTokensCommitted(dutch_auction_erc20):
-    assert dutch_auction_erc20.totalTokensCommitted() == 0
+    assert dutch_auction_erc20.totalTokensCommitted({'from': accounts[0]}) == 0
 
 
 def test_dutch_auction_erc20_commitTokens(dutch_auction_erc20, currency_token):
