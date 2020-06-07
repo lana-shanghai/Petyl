@@ -33,10 +33,10 @@ def test_rules_transferOwnership(token_rules):
 # ERC 1820 
 ######################################
 
-def test_can_implement_interface(base_token):
-    assert base_token.canImplementInterfaceForAddress(ERC20_TOKENS_INTERFACE_HASH,base_token, {'from': accounts[0]}) == ERC1820_ACCEPT_MAGIC
-    assert base_token.canImplementInterfaceForAddress(ERC777_INTERFACE_HASH,base_token, {'from': accounts[0]}) == ERC1820_ACCEPT_MAGIC
-    assert base_token.canImplementInterfaceForAddress(ERC777_INTERFACE_HASH,ZERO_ADDRESS, {'from': accounts[0]}) != ERC1820_ACCEPT_MAGIC
+# def test_can_implement_interface(base_token):
+#     assert base_token.canImplementInterfaceForAddress(ERC20_TOKENS_INTERFACE_HASH,base_token, {'from': accounts[0]}) == ERC1820_ACCEPT_MAGIC
+#     assert base_token.canImplementInterfaceForAddress(ERC777_INTERFACE_HASH,base_token, {'from': accounts[0]}) == ERC1820_ACCEPT_MAGIC
+#     assert base_token.canImplementInterfaceForAddress(ERC777_INTERFACE_HASH,ZERO_ADDRESS, {'from': accounts[0]}) != ERC1820_ACCEPT_MAGIC
 
 
 

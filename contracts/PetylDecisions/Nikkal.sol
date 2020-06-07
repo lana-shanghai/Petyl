@@ -33,9 +33,9 @@ contract Nikkal is Owned {
 
     uint public tokensForNewMembers;
 
-    uint public quorum = 80;              // AG Updateable
-    uint public quorumDecayPerWeek = 10;  // AG Updateable
-    uint public requiredMajority = 70;    // AG Updateable
+    uint public quorum;              // 80
+    uint public quorumDecayPerWeek;  // 10 
+    uint public requiredMajority;    // 70
 
     // Must be copied here to be added to the ABI
     event MemberAdded(address indexed memberAddress, string name, uint totalAfter);
@@ -55,12 +55,24 @@ contract Nikkal is Owned {
         _;
     }
 
-    function initPetylVote(address _token, string memory _groupName, uint _tokensForNewMembers) public {
+    function awakenNikkal(
+        address _token, 
+        string memory _groupName, 
+        uint _tokensForNewMembers,
+        uint _quorum,              
+        uint _quorumDecayPerWeek,  
+        uint _requiredMajority
+    ) 
+        public 
+    {
         require(!members.isInitialised());
         _initOwned(msg.sender);
         name = _groupName;
         tokensForNewMembers = _tokensForNewMembers;
         token = IPetylToken(_token);
+        quorum = _quorum;
+        quorumDecayPerWeek =_quorumDecayPerWeek;
+        requiredMajority = _requiredMajority;
         emit TokenUpdated(address(token), _token);
     }
     function initAddMember( string memory _name, address _address) public  {
@@ -76,7 +88,7 @@ contract Nikkal is Owned {
         require(!members.isInitialised());
         members.remove(_address);
     }
-    function initialisationComplete() public {
+    function awakeningComplete() public {
         require(isOwner());
         require(!members.isInitialised());
         require(members.length() != 0);

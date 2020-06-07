@@ -216,10 +216,10 @@ def petyl_vote(Nikkal, members_lib, proposals_lib, petyl_token):
     petyl_vote = Nikkal.deploy({"from": accounts[0]})
     petyl_token.setMintOperator(petyl_vote, True, {"from": accounts[0]})
 
-    petyl_vote.initPetylVote(petyl_token,"Flowers",VOTE_TOKENS, {"from": accounts[0]})
+    petyl_vote.awakenNikkal(petyl_token,"Flowers",VOTE_TOKENS,VOTE_QUORUM, VOTE_DECAY, VOTE_MAJORITY, {"from": accounts[0]})
     petyl_vote.initAddMember("Rose", accounts[0], {"from": accounts[0]})
     petyl_vote.initAddMember("Tulip", accounts[1], {"from": accounts[0]})
-    petyl_vote.initialisationComplete({"from": accounts[0]})
+    petyl_vote.awakeningComplete({"from": accounts[0]})
     return petyl_vote
 
 

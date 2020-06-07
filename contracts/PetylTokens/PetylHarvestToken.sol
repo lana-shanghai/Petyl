@@ -35,8 +35,9 @@ pragma solidity ^0.6.9;
 import "./PetylBaseToken.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "../ERCs/ERC1820Implementer.sol"; 
 
-contract PetylHarvestToken is PetylBaseToken, ReentrancyGuard  {
+contract PetylHarvestToken is PetylBaseToken, ERC1820Implementer,  ReentrancyGuard  {
 
     using SafeMath for uint256;
 
@@ -48,7 +49,7 @@ contract PetylHarvestToken is PetylBaseToken, ReentrancyGuard  {
     uint256 public totalHarvestPoints;  
     uint256 public totalUnclaimedHarvest;
 
-    mapping(address => uint256) public lastEthPoints;  
+    mapping(address => uint256) public lastPoints;  
     mapping(address => uint256) public unclaimedHarvestByAccount;
 
     // Harvest Events
@@ -72,6 +73,8 @@ contract PetylHarvestToken is PetylBaseToken, ReentrancyGuard  {
         public
     {
         initBaseToken(_tokenOwner, _name, _symbol, _defaultOperators,_burnOperator, _initialSupply);
+        // _registerInterfaceForAddress(_ERC777_TOKENS_INTERFACE_HASH, address(this)); 
+        // _registerInterfaceForAddress(_ERC20_TOKENS_INTERFACE_HASH, address(this));
         acceptEth = _acceptEth;
     }
 
@@ -95,8 +98,8 @@ contract PetylHarvestToken is PetylBaseToken, ReentrancyGuard  {
         _updateAccount(from);
         
         // Set last points for sending to new accounts.
-        if (balanceOf(to) == 0 && lastEthPoints[to] == 0 && totalHarvestPoints > 0) {
-          lastEthPoints[to] = totalHarvestPoints;
+        if (balanceOf(to) == 0 && lastPoints[to] == 0 && totalHarvestPoints > 0) {
+          lastPoints[to] = totalHarvestPoints;
         }
         _updateAccount(to);
     }
@@ -110,7 +113,7 @@ contract PetylHarvestToken is PetylBaseToken, ReentrancyGuard  {
         return _harvestOwing(_account);
     }
     function _harvestOwing(address _account) internal view returns(uint256) {
-        uint256 newHarvestPoints = totalHarvestPoints.sub(lastEthPoints[_account]);
+        uint256 newHarvestPoints = totalHarvestPoints.sub(lastPoints[_account]);
         // Returns amount ETH owed from current token balance
         return (balanceOf(_account) * newHarvestPoints) / pointMultiplier;
     }
@@ -126,12 +129,12 @@ contract PetylHarvestToken is PetylBaseToken, ReentrancyGuard  {
 
     function _updateAccount(address _account) internal {
        // Check if new deposits have been made since last withdraw
-      if (lastEthPoints[_account] < totalHarvestPoints ){
+      if (lastPoints[_account] < totalHarvestPoints ){
         uint256 _owing = _harvestOwing(_account);
         // Increment internal harvest counter to new amount owed
         if (_owing > 0) {
             unclaimedHarvestByAccount[_account] = unclaimedHarvestByAccount[_account].add(_owing);
-            lastEthPoints[_account] = totalHarvestPoints;
+            lastPoints[_account] = totalHarvestPoints;
         }
       }
     }
@@ -154,7 +157,7 @@ contract PetylHarvestToken is PetylBaseToken, ReentrancyGuard  {
     }
 
     function getLastEthPoints(address _account) external view returns (uint256) {
-        return lastEthPoints[_account];
+        return lastPoints[_account];
     }
 
 

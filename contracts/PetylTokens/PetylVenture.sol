@@ -18,7 +18,7 @@ pragma solidity ^0.6.9;
 //:::::01100100:01100101:01100101:01110000:01111001:01110010::::::
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 //                                                               :
-//  Petyl Security Token (PST)                                   :
+//  Petyl Venture Token (PVT)                                   :
 //  https://www.petyl.com                                        :
 //                                                               :
 //  Authors:                                                     :
@@ -40,7 +40,8 @@ import "../Utils/CloneFactory.sol";
 import "../ERCs/ERC1643.sol";
 // import "../ERCs/ERC1644.sol";
 
-// Petyl Security Token
+
+/// @notice Petyl Venture Token
 contract PetylVenture is IPetylContract, ERC1400,  CloneFactory {
 
     using SafeMath for uint;
@@ -67,12 +68,46 @@ contract PetylVenture is IPetylContract, ERC1400,  CloneFactory {
         baseTokenTemplate = _baseToken;
         // add to totalSupplyHistory { block.number, baseToken.totalSupply(); }
     }
-    
+
+
+    // AG: Add check for base token interface
     function setBaseTokenTemplate(address _baseToken) public  {
         require(isOwner());
         baseTokenTemplate = _baseToken;
 
     }
+
+   //--------------------------------------------------------
+    // Partitions
+    //--------------------------------------------------------
+
+    /// @notice Mints a new token to become apart of the venture
+    /// @dev create a new 
+    function addNewPartition(
+        string memory _name,
+        string memory _symbol,
+        address[] memory _defaultOperators,
+        address _burnOperator,
+        uint256 _initialSupply
+    )
+        public
+        returns (IBaseToken baseToken, bytes32 partitionId,  bool success)
+    {
+        require(isOwner());
+        baseToken = IBaseToken(payable(createClone(baseTokenTemplate)));
+        (partitionId, success) = addPartition(address(baseToken));
+        baseToken.initBaseToken(msg.sender, _name, _symbol, _defaultOperators, _burnOperator, _initialSupply);
+
+        //uint curTotalSupply = totalSupply();
+        //updateValueAtNow(totalSupplyHistory, curTotalSupply + initialSupply);
+        //updateValueAtNow(partitionBalances[partition], initialSupply);
+        emit AddedNewPartition(address(baseToken), partitionId);
+        success = true;
+    }
+
+    //--------------------------------------------------------
+    // Conversions
+    //--------------------------------------------------------
 
     function canConvert(bytes32 _from, bytes32 _to, uint _amount) public view returns (bool success) {
         address convertAddress = partitionConversions[_from][_to];
@@ -106,6 +141,10 @@ contract PetylVenture is IPetylContract, ERC1400,  CloneFactory {
         success = true;
     }
 
+    //--------------------------------------------------------
+    // Convert Partitions
+    //--------------------------------------------------------
+
     // conversion should be from an internal function which calls a mint and burn on the 777 tokens and a custom event
     // conversion could also act like a proxy that opperates on the data
     function convertPartition(
@@ -123,6 +162,7 @@ contract PetylVenture is IPetylContract, ERC1400,  CloneFactory {
 
         require(canConvert(_from, _to, _amount));
 
+        // Give contract operator permissions
         // check total supply before for both tokens
         // load conversion contract and convert tokens
         IPetylConv(partitionConversions[_from][_to]).convertToken(
@@ -137,35 +177,17 @@ contract PetylVenture is IPetylContract, ERC1400,  CloneFactory {
         // check total supply for both tokens
         // _operatorRedeemByPartition(_partition, _tokenHolder,_value,_data);
         // _issueByPartition(_partition, _tokenHolder, _value, _data);
-
+        // Revoke converter permissions
         emit PartitionConverted(_from, _to, msg.sender, _amount);
     }
 
-    
-    function addNewPartition(
-        string memory _name,
-        string memory _symbol,
-        address[] memory _defaultOperators,
-        address _burnOperator,
-        uint256 _initialSupply
-    )
-        public
-        returns (IBaseToken baseToken, bytes32 partitionId,  bool success)
-    {
-        baseToken = IBaseToken(payable(createClone(baseTokenTemplate)));
-        // _token = new ERC777Token("TEST", "Test Token", 18, 1, 2000000);
-        (partitionId, success) = addPartition(address(baseToken));
-        baseToken.initBaseToken(msg.sender, _name, _symbol, _defaultOperators, _burnOperator, _initialSupply);
-
-        //uint curTotalSupply = totalSupply();
-        //updateValueAtNow(totalSupplyHistory, curTotalSupply + initialSupply);
-        //updateValueAtNow(partitionBalances[partition], initialSupply);
-        //success = true;
-        emit AddedNewPartition(address(baseToken), partitionId);
-    }
 
 
-    // footer functions
+    //--------------------------------------------------------
+    // Footer functions
+    //--------------------------------------------------------
+
+    /// @notice This contract shouldn't have any ERC20 tokens. Owner can move stuck tokens
     function transferAnyERC20Token(address tokenAddress, uint256 tokens) public  returns (bool success) {
         require(isOwner());
         return IERC20(tokenAddress).transfer(mOwner, tokens);

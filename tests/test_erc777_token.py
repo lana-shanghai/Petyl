@@ -82,9 +82,14 @@ def test_erc777_not_operator_send(base_token):
 ######################################
 
 def test_mint_operator(base_token):
+
+    minter = accounts[4]
+    tx = base_token.setMintOperator(minter, True, {'from': accounts[0]})
+
+
     user_data = '500 ether minted to accounts[1]'.encode()
     operator_data = '500 ether minted to accounts[1]'.encode()
-    tx = base_token.mint(accounts[1], '500 ether', user_data, operator_data, {'from': accounts[2]})
+    tx = base_token.operatorMint(accounts[1], '500 ether', user_data, operator_data, {'from': minter})
 
     # ERC20 Transfer event from 0x0
     assert 'Transfer' in tx.events
@@ -93,10 +98,10 @@ def test_mint_operator(base_token):
     # ERC777 Minted event
     assert 'Minted' in tx.events
     # AG Check minting event outputs
-    assert tx.events['Minted'] == {'operator': accounts[2],
+    assert tx.events['Minted'] == {'operator': minter,
                                    'to': accounts[1],
-                                   'amount': '500 ether',
-                                   'userData': '0x' + user_data.hex(), 
+                                   'amount': "500 ether",
+                                   'data': '0x' + user_data.hex(), 
                                    'operatorData': '0x' + operator_data.hex()}
 
 # def test_mint_owner(base_token):
@@ -141,7 +146,7 @@ def test_burn(base_token):
     assert 'Burned' in tx.events
     assert tx.events['Burned'] == {'operator': accounts[0],
                                    'from': accounts[0],
-                                   'amount': '990 ether',
+                                   'amount': "990 ether",
                                    'data': '0x' + data.hex(),
                                    'operatorData': '0x'}
 
@@ -169,7 +174,7 @@ def test_burn_operator(base_token):
     assert 'Burned' in tx.events
     assert tx.events['Burned'] == {'operator': accounts[4],
                                    'from': accounts[0],
-                                   'amount': '990 ether',
+                                   'amount': "990 ether",
                                    'data': '0x' + data.hex(),
                                    'operatorData': '0x' + operator_data.hex()}
 
