@@ -17,9 +17,23 @@ AUCTION_START = int(time.time()) + 200   # Few minutes to deploy
 AUCTION_END = AUCTION_START + 60 * 60 * 24 * AUCTION_DAYS
 
 
+# add accounts if active network is ropsten
+if network.show_active() == 'ropsten':
+    # 0x2A40019ABd4A61d71aBB73968BaB068ab389a636
+    accounts.add('4ca89ec18e37683efa18e0434cd9a28c82d461189c477f5622dae974b43baebf')
+
+    # 0x1F3389Fc75Bf55275b03347E4283f24916F402f7
+    accounts.add('fa3c06c67426b848e6cef377a2dbd2d832d3718999fbe377236676c9216d8ec0')
+    BASE_TOKEN =  '0x60FE4B3DF6A0Ef3F417d498265Be07eb0bC4D237'
+    AUCTION_TEMPLATE = '0x392987b469D8845ABA94Ef753457eC668a376B04'
+    AUCTION_FACTORY = '0xE736dEe490731ffc201805008469108Ee48C3827'
+    USE_EXISTING_CONTRACTS = True
+
+
+
 def deploy_auction_token():
-    if network.show_active() == 'ropsten':
-        auction_token_address = web3.toChecksumAddress('0xeA5d540ed6c45667e942f54e36814172Ab25EE99')
+    if network.show_active() == 'ropsten' and USE_EXISTING_CONTRACTS:
+        auction_token_address = web3.toChecksumAddress(BASE_TOKEN)
         auction_token = PetylBaseToken.at(auction_token_address)
         return auction_token 
 
@@ -43,8 +57,8 @@ def deploy_auction_token():
 
 
 def deploy_dutch_auction_template():
-    if network.show_active() == 'ropsten':
-        auction_template_address = web3.toChecksumAddress('0x95Efabf64e483634314BbC638CD22E749ce4bb05')
+    if network.show_active() == 'ropsten' and USE_EXISTING_CONTRACTS:
+        auction_template_address = web3.toChecksumAddress(AUCTION_TEMPLATE)
         dutch_auction_template = PetylDutchAuction.at(auction_template_address)
         return dutch_auction_template 
     
@@ -53,8 +67,8 @@ def deploy_dutch_auction_template():
 
 
 def deploy_auction_factory(dutch_auction_template):
-    if network.show_active() == 'ropsten':
-        auction_factory_address = web3.toChecksumAddress('0x0A75F8dB4084263ed7dd8a3C44881cE279e85340')
+    if network.show_active() == 'ropsten' and USE_EXISTING_CONTRACTS:
+        auction_factory_address = web3.toChecksumAddress(AUCTION_FACTORY)
         auction_factory = PetylAuctionFactory.at(auction_factory_address)
         return auction_factory 
 
@@ -70,26 +84,19 @@ def deploy_dutch_auction(auction_factory, auction_token):
     startDate = AUCTION_START
     endDate = AUCTION_END
     wallet = accounts[1]
+    tx = auction_token.mint(accounts[0], AUCTION_TOKENS, '','', {'from': accounts[0]})
 
+    tx = auction_token.approve(auction_factory, AUCTION_TOKENS, {'from': accounts[0]})
     tx = auction_factory.deployDutchAuction(auction_token, AUCTION_TOKENS, AUCTION_START,AUCTION_END,ETH_ADDRESS, AUCTION_START_PRICE, AUCTION_RESERVE, wallet, {"from": accounts[0]})
 
-
     dutch_auction = PetylDutchAuction.at(web3.toChecksumAddress(tx.events['DutchAuctionDeployed']['addr']))
-    auction_token.setMintOperator(dutch_auction, True, {"from": accounts[0]})
-    assert dutch_auction.auctionPrice() == AUCTION_START_PRICE
+    assert dutch_auction.clearingPrice() == AUCTION_START_PRICE
     return dutch_auction
 
 
 
 
 def main():
-    # add accounts if active network is ropsten
-    if network.show_active() == 'ropsten':
-        # 0x2A40019ABd4A61d71aBB73968BaB068ab389a636
-        accounts.add('4ca89ec18e37683efa18e0434cd9a28c82d461189c477f5622dae974b43baebf')
-
-        # 0x1F3389Fc75Bf55275b03347E4283f24916F402f7
-        accounts.add('fa3c06c67426b848e6cef377a2dbd2d832d3718999fbe377236676c9216d8ec0')
 
 
     auction_token = deploy_auction_token()
@@ -102,46 +109,47 @@ def main():
 
 
 
-
 # Running 'scripts.deploy_PetylAuction.main'...
-# Transaction sent: 0x942d481d0c659386cfd5720dde22f98833f1c5283d806839a7e11be74a57b222
-#   Gas price: 2.0 gwei   Gas limit: 3448087
+# Transaction sent: 0x535c3cf185d377f3a83eb379127313a694a29c1f2fcbb0d7bdea8cc978668228
+#   Gas price: 1.0 gwei   Gas limit: 3396980
 # Waiting for confirmation...
-#   PetylBaseToken.constructor confirmed - Block: 7982673   Gas used: 3448087 (100.00%)
-#   PetylBaseToken deployed at: 0xeA5d540ed6c45667e942f54e36814172Ab25EE99
+#   PetylBaseToken.constructor confirmed - Block: 8335724   Gas used: 3396980 (100.00%)
+#   PetylBaseToken deployed at: 0x60FE4B3DF6A0Ef3F417d498265Be07eb0bC4D237
 
-# Transaction sent: 0xeec88a7a18a14d3aaa7e6355a509aec68e248cf6ed4a00a5d49e0d12b24cd19a
-#   Gas price: 2.0 gwei   Gas limit: 306993
+# Transaction sent: 0x2e95284c5593b8fc4e4114bd0f83b5a9644089616e10c3e3cbb071a5f319eb28
+#   Gas price: 1.0 gwei   Gas limit: 265103
 # Waiting for confirmation...
-#   PetylBaseToken.initBaseToken confirmed - Block: 7982674   Gas used: 306993 (100.00%)
+#   PetylBaseToken.initBaseToken confirmed - Block: 8335725   Gas used: 265103 (100.00%)
 
-
-
-# Running 'scripts.deploy_PetylAuction.main'...
-# Transaction sent: 0x66ca61bc1518f339158c3c74f70ed4ef1b4be1f4e3800eca8feede6e38594783
-#   Gas price: 2.0 gwei   Gas limit: 767956
+# Transaction sent: 0x153c1a0c50c0c29eea490d7c309569c96ef12d80382340c0d83c5af85ed1dc5d
+#   Gas price: 1.0 gwei   Gas limit: 933447
 # Waiting for confirmation...
-#   PetylDutchAuction.constructor confirmed - Block: 7982772   Gas used: 767956 (100.00%)
-#   PetylDutchAuction deployed at: 0x95Efabf64e483634314BbC638CD22E749ce4bb05
+#   PetylDutchAuction.constructor confirmed - Block: 8335727   Gas used: 933447 (100.00%)
+#   PetylDutchAuction deployed at: 0x392987b469D8845ABA94Ef753457eC668a376B04
 
-# Transaction sent: 0x99907e87b743730373e24eedb080329bd0c0a81ab296c6ff17860a7f4d225730
-#   Gas price: 2.0 gwei   Gas limit: 670160
+# Transaction sent: 0x0790fca0b8148dea4c1bd0d968c49ea190b9fbfd8ff5718f2cd1eeaa9ba04867
+#   Gas price: 1.0 gwei   Gas limit: 734202
 # Waiting for confirmation...
-#   PetylAuctionFactory.constructor confirmed - Block: 7982773   Gas used: 670160 (100.00%)
-#   PetylAuctionFactory deployed at: 0x0A75F8dB4084263ed7dd8a3C44881cE279e85340
+#   PetylAuctionFactory.constructor confirmed - Block: 8335729   Gas used: 734202 (100.00%)
+#   PetylAuctionFactory deployed at: 0xE736dEe490731ffc201805008469108Ee48C3827
 
-# Transaction sent: 0xd3b4d92d54fc5ae8f3fa4fda19adc0c4c0ed879f1845bccdfb4219bb76d0c308
-#   Gas price: 2.0 gwei   Gas limit: 68338
+# Transaction sent: 0x283ce85fcf71342614a1f34675bd38cecf5b5711284b9f764a1b7bbf77da0e43
+#   Gas price: 1.0 gwei   Gas limit: 68338
 # Waiting for confirmation...
-#   PetylAuctionFactory.initPetylAuctionFactory confirmed - Block: 7982774   Gas used: 66846 (97.82%)
+#   PetylAuctionFactory.initPetylAuctionFactory confirmed - Block: 8335731   Gas used: 66846 (97.82%)
 
-# Running 'scripts.deploy_PetylAuction.main'...
-# Transaction sent: 0x948f322ee0cff39fd9b1815997d098d2a777020c7b3265f688b79b24da81f0ed
-#   Gas price: 3.0 gwei   Gas limit: 285570
-# Waiting for confirmation...
-#   PetylAuctionFactory.deployDutchAuction confirmed - Block: 7982823   Gas used: 283421 (99.25%)
 
-# Transaction sent: 0x403c4c997d47eee51d85c6eef0948f15724a3a042903e57e5b350c6c63bed907
-#   Gas price: 3.0 gwei   Gas limit: 45568
+# Transaction sent: 0xb99d8fd21580e757f2720a97793860724cfcc210d46f44899cd2676478757d67
+#   Gas price: 1.0 gwei   Gas limit: 76740
 # Waiting for confirmation...
-#   PetylBaseToken.setMintOperator confirmed - Block: 7982824   Gas used: 45568 (100.00%)
+#   PetylBaseToken.mint confirmed - Block: 8335936   Gas used: 76740 (100.00%)
+
+# Transaction sent: 0x7d370ba18e5db981fdfc916a4c666b546b02fd3c543f51ba16237451126b8d12
+#   Gas price: 1.0 gwei   Gas limit: 24974
+# Waiting for confirmation...
+#   PetylBaseToken.approve confirmed - Block: 8335939   Gas used: 24974 (100.00%)
+
+# Transaction sent: 0x22fcefba8d99160e6e7954a147d049ef666a01bc7333334f9dd3d5db422093ba
+#   Gas price: 1.0 gwei   Gas limit: 440727
+# Waiting for confirmation...
+#   PetylAuctionFactory.deployDutchAuction confirmed - Block: 8335944   Gas used: 367245 (83.33%)

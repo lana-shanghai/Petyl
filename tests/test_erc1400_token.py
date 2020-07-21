@@ -44,7 +44,7 @@ def test_erc1400_transfer(erc1400_token):
     assert erc1400_token.balanceOf(accounts[1]) == "2 ether"
 
     assert 'Transfer' in tx.events
-    assert tx.events['Transfer'] == {'from': accounts[0], 'to': accounts[1], 'amount': '2 ether'}
+    assert tx.events['Transfer'] == {'from': accounts[0], 'to': accounts[1], 'value': '2 ether'}
 
     assert 'Sent' in tx.events
     assert tx.events['Sent'] == {'from': accounts[0],
@@ -80,7 +80,7 @@ def test_erc1400_approve(erc1400_token):
     tx = erc1400_token.approve(accounts[2], '5 ether', {'from': accounts[0]})
     assert erc1400_token.allowance(accounts[0], accounts[2], {'from': accounts[0]}) == "5 ether"
     assert 'Approval' in tx.events
-    assert tx.events['Approval'] == {'owner': accounts[0], 'spender': accounts[2], 'amount': '5 ether'}
+    assert tx.events['Approval'] == {'owner': accounts[0], 'spender': accounts[2], 'value': '5 ether'}
 
 
 def test_erc1400_transfer_from(erc1400_token):
@@ -89,7 +89,7 @@ def test_erc1400_transfer_from(erc1400_token):
     assert erc1400_token.balanceOf(accounts[0]) == "995 ether"
     assert erc1400_token.balanceOf(accounts[1]) == "5 ether"
     assert 'Transfer' in tx.events
-    assert tx.events['Transfer'] == {'from': accounts[0], 'to': accounts[1], 'amount': '5 ether'}
+    assert tx.events['Transfer'] == {'from': accounts[0], 'to': accounts[1], 'value': '5 ether'}
 
 def test_erc1400_transfer_from_not_enough_funds(erc1400_token):
     erc1400_token.approve(accounts[1], '1001 ether', {'from': accounts[0]})
@@ -122,7 +122,7 @@ def test_erc1400_transferByPartition(erc1400_token):
     assert erc1400_token.balanceOfByPartition(default_partition, accounts[1]) == "2 ether"
 
     assert 'Transfer' in tx.events
-    assert tx.events['Transfer'] == {'from': accounts[0], 'to': accounts[1], 'amount': "2 ether"}
+    assert tx.events['Transfer'] == {'from': accounts[0], 'to': accounts[1], 'value': "2 ether"}
 
     assert 'Sent' in tx.events
     assert tx.events['Sent'] == {'from': accounts[0],
@@ -146,7 +146,7 @@ def test_erc1400_transferWithData(erc1400_token):
     assert erc1400_token.balanceOf( accounts[0]) == "985 ether"
     assert erc1400_token.balanceOf(accounts[1]) == "15 ether"
     assert 'Sent' in tx.events
-    assert tx.events['Transfer'] == {'from': accounts[0], 'to': accounts[1], 'amount': "15 ether"}
+    assert tx.events['Transfer'] == {'from': accounts[0], 'to': accounts[1], 'value': "15 ether"}
 
 
 
@@ -157,7 +157,7 @@ def test_erc1400_transferFromWithData(erc1400_token):
     assert erc1400_token.balanceOf(accounts[0]) == "985 ether"
     assert erc1400_token.balanceOf(accounts[1]) == "15 ether"
     assert 'Transfer' in tx.events
-    assert tx.events['Transfer'] == {'from': accounts[0], 'to': accounts[1], 'amount': "15 ether"}
+    assert tx.events['Transfer'] == {'from': accounts[0], 'to': accounts[1], 'value': "15 ether"}
 
 
 # def test_erc1400_canTransferByPartition(erc1400_token):
@@ -207,7 +207,7 @@ def test_erc1400_operatorTransferByPartition(erc1400_token):
     assert erc1400_token.balanceOfByPartition(default_partition, accounts[1]) == "15 ether"
 
     assert 'Sent' in tx.events
-    assert tx.events['Transfer'] == {'from': accounts[0], 'to': accounts[1], 'amount': "15 ether"}
+    assert tx.events['Transfer'] == {'from': accounts[0], 'to': accounts[1], 'value': "15 ether"}
 
 def test_erc1400_operator_send_too_much(erc1400_token):
     default_partition = erc1400_token.getDefaultPartition()

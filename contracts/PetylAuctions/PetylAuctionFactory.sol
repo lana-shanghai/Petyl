@@ -91,7 +91,9 @@ contract PetylAuctionFactory is  Owned, CloneFactory {
         dutchAuction = createClone(dutchAuctionTemplate);
         isChildAuction[address(dutchAuction)] = Auction(true, auctions.length - 1);
         auctions.push(address(dutchAuction));
-        IPetylAuction(dutchAuction).initDutchAuction(_token,_tokenSupply,_startDate,_endDate,_paymentCurrency,_startPrice,_minimumPrice,_wallet);
+        require(IERC20(_token).transferFrom(msg.sender, address(this), _tokenSupply)); 
+        require(IERC20(_token).approve(dutchAuction, _tokenSupply));
+        IPetylAuction(dutchAuction).initDutchAuction(address(this), _token,_tokenSupply,_startDate,_endDate,_paymentCurrency,_startPrice,_minimumPrice,_wallet);
         emit DutchAuctionDeployed(msg.sender, address(dutchAuction), dutchAuctionTemplate, msg.value);
     }
 

@@ -59,7 +59,7 @@ def test_erc777_operator_send(base_token):
     assert base_token.balanceOf(accounts[1]) == '15 ether'
 
     assert 'Sent' in tx.events
-    assert tx.events['Transfer'] == {'from': accounts[0], 'to': accounts[1], 'amount': '15 ether'}
+    assert tx.events['Transfer'] == {'from': accounts[0], 'to': accounts[1], 'value': '15 ether'}
 
 def test_erc777_operator_send_too_much(base_token):
     user_data = '2000 ether minted to accounts[1]'.encode()
@@ -93,7 +93,7 @@ def test_mint_operator(base_token):
 
     # ERC20 Transfer event from 0x0
     assert 'Transfer' in tx.events
-    assert tx.events['Transfer'] == {'from': ZERO_ADDRESS, 'to': accounts[1], 'amount': '500 ether'}
+    assert tx.events['Transfer'] == {'from': ZERO_ADDRESS, 'to': accounts[1], 'value': '500 ether'}
 
     # ERC777 Minted event
     assert 'Minted' in tx.events
@@ -140,7 +140,7 @@ def test_burn(base_token):
 
     # ERC20 Transfer event to 0x0
     assert 'Transfer' in tx.events
-    assert tx.events['Transfer'] == {'from': accounts[0], 'to': ZERO_ADDRESS, 'amount': '990 ether'}
+    assert tx.events['Transfer'] == {'from': accounts[0], 'to': ZERO_ADDRESS, 'value': '990 ether'}
 
     # ERC777 Burned event
     assert 'Burned' in tx.events
@@ -168,7 +168,7 @@ def test_burn_operator(base_token):
 
     # ERC20 Transfer event to 0x0
     assert 'Transfer' in tx.events
-    assert tx.events['Transfer'] == {'from': accounts[0], 'to': ZERO_ADDRESS, 'amount': '990 ether'}
+    assert tx.events['Transfer'] == {'from': accounts[0], 'to': ZERO_ADDRESS, 'value': '990 ether'}
 
     # ERC777 Burned event
     assert 'Burned' in tx.events

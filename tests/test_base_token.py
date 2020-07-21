@@ -52,7 +52,7 @@ def test_erc20_transfer(base_token):
     assert base_token.balanceOf(accounts[1]) == '2 ether'
 
     assert 'Transfer' in tx.events
-    assert tx.events['Transfer'] == {'from': accounts[0], 'to': accounts[1], 'amount': '2 ether'}
+    assert tx.events['Transfer'] == {'from': accounts[0], 'to': accounts[1], 'value': '2 ether'}
 
     assert 'Sent' in tx.events
     assert tx.events['Sent'] == {'from': accounts[0],
@@ -74,7 +74,7 @@ def test_erc20_approve(base_token):
     assert base_token.allowance(accounts[0], accounts[2]) == '5 ether'
 
     assert 'Approval' in tx.events
-    assert tx.events['Approval'] == {'owner': accounts[0], 'spender': accounts[2], 'amount': '5 ether'}
+    assert tx.events['Approval'] == {'owner': accounts[0], 'spender': accounts[2], 'value': '5 ether'}
 
 
 def test_erc20_transfer_from(base_token):
@@ -86,7 +86,7 @@ def test_erc20_transfer_from(base_token):
     assert base_token.balanceOf(accounts[2]) == '5 ether'
 
     assert 'Transfer' in tx.events
-    assert tx.events['Transfer'] == {'from': accounts[0], 'to': accounts[2], 'amount': '5 ether'}
+    assert tx.events['Transfer'] == {'from': accounts[0], 'to': accounts[2], 'value': '5 ether'}
 
 
 def test_erc20_transfer_from_not_enough_funds(base_token):

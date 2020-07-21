@@ -79,15 +79,17 @@ def test_dutch_auction_erc20_claim(dutch_auction_erc20, currency_token):
     token_buyer = accounts[2]
     tokens_to_transfer = 100 * TENPOW18
 
+    dutch_auction_erc20.finaliseAuction({'from': accounts[0]})
+    assert dutch_auction_erc20.finalised({'from': accounts[0]}) == False
+    
+
     # dutch_auction_erc20.withdrawTokens({'from': accounts[0]})
     
     currency_token.approve(dutch_auction_erc20, tokens_to_transfer, {'from': token_buyer})
     tx = dutch_auction_erc20.commitTokens(tokens_to_transfer, {'from': token_buyer})
     assert 'AddedCommitment' in tx.events
 
-    with reverts():
-        dutch_auction_erc20.finaliseAuction({'from': accounts[0]})
-    
+    ## AG: Test cases before auction ends above and below reserve
     rpc.sleep(AUCTION_TIME+100)
     rpc.mine()
     dutch_auction_erc20.withdrawTokens({'from': token_buyer})
@@ -95,6 +97,8 @@ def test_dutch_auction_erc20_claim(dutch_auction_erc20, currency_token):
     assert dutch_auction_erc20.auctionSuccessful({'from': accounts[0]}) == True
 
     dutch_auction_erc20.finaliseAuction({'from': accounts[0]})
+    assert dutch_auction_erc20.finalised({'from': accounts[0]}) == True
+    
 
 
 def test_dutch_auction_erc20_claim_not_enough(dutch_auction_erc20, currency_token):
@@ -111,13 +115,13 @@ def test_dutch_auction_erc20_claim_not_enough(dutch_auction_erc20, currency_toke
 
 
 
-def test_dutch_auction_erc20_auctionPrice(dutch_auction_erc20, currency_token):
+def test_dutch_auction_erc20_clearingPrice(dutch_auction_erc20, currency_token):
     rpc.sleep(100)
     rpc.mine()
-    assert dutch_auction_erc20.auctionPrice() <= AUCTION_START_PRICE
-    assert dutch_auction_erc20.auctionPrice() > AUCTION_RESERVE
+    assert dutch_auction_erc20.clearingPrice() <= AUCTION_START_PRICE
+    assert dutch_auction_erc20.clearingPrice() > AUCTION_RESERVE
 
     rpc.sleep(AUCTION_TIME)
     rpc.mine()
-    assert dutch_auction_erc20.auctionPrice() == AUCTION_RESERVE
+    assert dutch_auction_erc20.clearingPrice() == AUCTION_RESERVE
 

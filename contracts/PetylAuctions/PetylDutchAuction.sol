@@ -1,7 +1,6 @@
 pragma solidity ^0.6.9;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
-import "../../interfaces/IPetylToken.sol";
 import "../../interfaces/IERC20.sol";
 
 
@@ -11,7 +10,7 @@ import "../../interfaces/IERC20.sol";
 //
 // MVP prototype. DO NOT USE!
 //                        
-// (c) Adrian Guerrera.  MIT Licence.                            
+// (c) Adrian Guerrera. Deepyr Pty Ltd.  MIT Licence.                            
 // May 26 2020                                  
 // ----------------------------------------------------------------------------
 // SPDX-License-Identifier: MIT
@@ -30,15 +29,17 @@ contract PetylDutchAuction  {
     uint256 public startPrice;
     uint256 public minimumPrice;
     uint256 public tokenSupply;
-    IPetylToken public token; 
+    bool public finalised;
+    IERC20 public auctionToken; 
     IERC20 public paymentCurrency; 
     address payable public wallet;
     mapping(address => uint256) public commitments;
 
-    event AddedCommitment(address addr, uint256 commitment);
+    event AddedCommitment(address addr, uint256 commitment, uint256 price);
 
     /// @dev Init function 
     function initDutchAuction(
+        address _funder,
         address _token, 
         uint256 _tokenSupply, 
         uint256 _startDate, 
@@ -54,14 +55,18 @@ contract PetylDutchAuction  {
         require(_startPrice > _minimumPrice);
         require(_minimumPrice > 0);
 
-        token = IPetylToken(_token);
+        auctionToken = IERC20(_token);
         paymentCurrency = IERC20(_paymentCurrency);
+
+        require(IERC20(auctionToken).transferFrom(_funder, address(this), _tokenSupply));
+
         tokenSupply =_tokenSupply;
         startDate = _startDate;
         endDate = _endDate;
         startPrice = _startPrice;
         minimumPrice = _minimumPrice; 
         wallet = _wallet;
+        finalised = false;
     }
 
 
@@ -72,9 +77,9 @@ contract PetylDutchAuction  {
     //                   \ 
     //                    \
     //                     \
-    //                      \ ------------ Token Price
+    //                      \ ------------ Clearing Price
     //                     / \            = AmountRaised/TokenSupply
-    //                   --   \
+    //      Token Price  --   \
     //                  /      \ 
     //                --        ----------- Minimum Price
     // Amount raised /          End Time
@@ -106,8 +111,8 @@ contract PetylDutchAuction  {
         return price;
     }
 
-    /// @notice The current Dutch auction price
-    function auctionPrice() public view returns (uint256) {
+    /// @notice The current clearing price of the Dutch auction
+    function clearingPrice() public view returns (uint256) {
         /// @dev If auction successful, return tokenPrice
         if (tokenPrice() > priceFunction()) {
             return tokenPrice();
@@ -117,12 +122,12 @@ contract PetylDutchAuction  {
 
     /// @notice How many tokens the user is able to claim
     function tokensClaimable(address _user) public view returns (uint256) {
-        return commitments[_user].mul(TENPOW18).div(auctionPrice());
+        return commitments[_user].mul(TENPOW18).div(clearingPrice());
     }
 
     /// @notice Total amount of tokens committed at current auction price
     function totalTokensCommitted() public view returns(uint256) {
-        return amountRaised.mul(TENPOW18).div(auctionPrice());
+        return amountRaised.mul(TENPOW18).div(clearingPrice());
     }
 
     /// @notice Successful if tokens sold equals tokenSupply
@@ -146,7 +151,6 @@ contract PetylDutchAuction  {
 
     /// @notice Commit ETH to buy tokens on sale
     function commitEth (address payable _from) public payable {
-        require(now >= startDate && now <= endDate);
         require(address(paymentCurrency) == ETH_ADDRESS);
         // Get ETH able to be committed
         uint256 ethToTransfer = calculateCommitment( msg.value);
@@ -162,6 +166,13 @@ contract PetylDutchAuction  {
         }
     }
 
+    /// @notice Commits to an amount during an auction
+    function addCommitment(address _addr,  uint256 _commitment) internal {
+        require(now >= startDate && now <= endDate);
+        commitments[_addr] = commitments[_addr].add(_commitment);
+        amountRaised = amountRaised.add(_commitment);
+        emit AddedCommitment(_addr, _commitment, tokenPrice());
+    }
 
     /// @notice Commit approved ERC20 tokens to buy tokens on sale
     function commitTokens (uint256 _amount) public {
@@ -170,7 +181,6 @@ contract PetylDutchAuction  {
 
     /// @dev Users must approve contract prior to committing tokens to auction
     function commitTokensFrom (address _from, uint256 _amount) public {
-        require(now >= startDate && now <= endDate);
         require(address(paymentCurrency) != ETH_ADDRESS);
         uint256 tokensToTransfer = calculateCommitment( _amount);
         if (tokensToTransfer > 0) {
@@ -183,31 +193,36 @@ contract PetylDutchAuction  {
     function calculateCommitment( uint256 _commitment) 
         public view returns (uint256 committed) 
     {
-        uint256 maxCommitment = tokenSupply.mul(auctionPrice()).div(TENPOW18);
+        uint256 maxCommitment = tokenSupply.mul(clearingPrice()).div(TENPOW18);
         if (amountRaised.add(_commitment) > maxCommitment) {
             return maxCommitment.sub(amountRaised);
         }
         return _commitment;
     }
 
-    /// @notice Commits to an amount during an auction
-    function addCommitment(address _addr,  uint256 _commitment) internal {
-        commitments[_addr] = commitments[_addr].add(_commitment);
-        amountRaised = amountRaised.add(_commitment);
-        emit AddedCommitment(_addr, _commitment);
-    }
-
-
 
     //--------------------------------------------------------
-    // Withdraw tokens 
+    // Finalise Auction
     //--------------------------------------------------------
 
     /// @notice Auction finishes successfully above the reserve
     /// @dev Transfer contract funds to initialised wallet. 
-    function finaliseAuction () public  {
-        require(auctionSuccessful());
-        _tokenPayment(wallet, amountRaised);       
+    function finaliseAuction () public {
+        require(!finalised); 
+        
+
+        /// @notice Auction did not meet reserve price.
+        if( auctionEnded() && tokenPrice() < minimumPrice ) {
+            _tokenPayment(auctionToken, wallet, tokenSupply);
+            finalised = true;       
+            return;      
+        }
+        /// @notice Successful auction! Transfer tokens bought.
+        if (auctionSuccessful()) {
+            _tokenPayment(paymentCurrency, wallet, amountRaised);
+            finalised = true;
+        }
+
     }
 
     /// @notice Withdraw your tokens once the Auction has ended.
@@ -219,23 +234,23 @@ contract PetylDutchAuction  {
         /// @notice Auction did not meet reserve price.
         /// @dev Return committed funds back to user.
         if( auctionEnded() && tokenPrice() < minimumPrice ) {
-            _tokenPayment(msg.sender, fundsCommitted);       
+            _tokenPayment(paymentCurrency, msg.sender, fundsCommitted);       
             return;      
         }
         /// @notice Successful auction! Transfer tokens bought.
         /// @dev AG: Should hold and distribute tokens vs mint
         /// @dev AG: Could be only > min to allow early withdraw  
         if (auctionSuccessful() && tokensToClaim > 0 ) {
-            token.operatorMint( msg.sender,tokensToClaim,"","");
+            _tokenPayment(auctionToken, msg.sender, tokensToClaim);
         }
     }
 
     /// @dev Helper function to handle both ETH and ERC20 payments
-    function _tokenPayment(address payable _to, uint256 _amount) internal {
-        if (address(paymentCurrency) == ETH_ADDRESS) {
+    function _tokenPayment(IERC20 _token, address payable _to, uint256 _amount) internal {
+        if (address(_token) == ETH_ADDRESS) {
             _to.transfer(_amount); 
         } else {
-            require(paymentCurrency.transfer(_to, _amount));
+            require(_token.transfer(_to, _amount));
         }
     }
 

@@ -287,7 +287,7 @@ def auction_token(PetylBaseToken, petyl_factory):
     default_operators = [ZERO_ADDRESS]
     burn_operator = ZERO_ADDRESS
     controller = ZERO_ADDRESS
-    initial_supply = 0
+    initial_supply = AUCTION_TOKENS * 10
 
     tx = petyl_factory.deployBaseToken(token_owner,  name,symbol, default_operators, burn_operator, initial_supply,{'from': accounts[0]})
     auction_token = PetylBaseToken.at(tx.return_value)
@@ -318,11 +318,10 @@ def dutch_auction(PetylDutchAuction, auction_factory, auction_token):
     startDate = rpc.time() +10
     endDate = startDate + AUCTION_TIME
     wallet = accounts[1]
-
+    tx = auction_token.approve(auction_factory, AUCTION_TOKENS, {'from': accounts[0]})
     tx = auction_factory.deployDutchAuction(auction_token, AUCTION_TOKENS, startDate, endDate,ETH_ADDRESS, AUCTION_START_PRICE, AUCTION_RESERVE, wallet, {"from": accounts[0]})
     dutch_auction = PetylDutchAuction.at(tx.return_value)
-    auction_token.setMintOperator(dutch_auction, True, {"from": accounts[0]})
-    assert dutch_auction.auctionPrice() == AUCTION_START_PRICE
+    assert dutch_auction.clearingPrice() == AUCTION_START_PRICE
     rpc.sleep(10)
     return dutch_auction
 
@@ -333,14 +332,11 @@ def dutch_auction_erc20(PetylDutchAuction, auction_factory, auction_token, curre
     startDate = rpc.time() +10
     endDate = startDate + AUCTION_TIME
     wallet = accounts[1]
-
+    tx = auction_token.approve(auction_factory, AUCTION_TOKENS, {'from': accounts[0]})
     tx = currency_token.transfer(accounts[2], '1000 ether', {'from': accounts[0]})
     tx = currency_token.transfer(accounts[3], '1000 ether', {'from': accounts[0]})
-
     tx = auction_factory.deployDutchAuction(auction_token, AUCTION_TOKENS, startDate, endDate,currency_token, AUCTION_START_PRICE, AUCTION_RESERVE, wallet, {"from": accounts[0]})
     dutch_auction = PetylDutchAuction.at(tx.return_value)
-
-    auction_token.setMintOperator(dutch_auction, True, {"from": accounts[0]})
-    assert dutch_auction.auctionPrice() == AUCTION_START_PRICE
+    assert dutch_auction.clearingPrice() == AUCTION_START_PRICE
     rpc.sleep(10)
     return dutch_auction

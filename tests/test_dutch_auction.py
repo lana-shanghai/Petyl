@@ -71,10 +71,13 @@ def test_dutch_auction_claim(dutch_auction):
 
     dutch_auction.withdrawTokens({'from': accounts[0]})
     
+    dutch_auction.finaliseAuction({'from': accounts[0]})
+    assert dutch_auction.finalised({'from': accounts[0]}) == False
+       
     token_buyer.transfer(dutch_auction,eth_to_transfer)
-    with reverts():
-        dutch_auction.finaliseAuction({'from': accounts[0]})
-    
+
+    ## AG: Test cases before auction ends above and below reserve
+
     rpc.sleep(AUCTION_TIME+100)
     rpc.mine()
     dutch_auction.withdrawTokens({'from': token_buyer})
@@ -82,7 +85,8 @@ def test_dutch_auction_claim(dutch_auction):
     assert dutch_auction.auctionSuccessful({'from': accounts[0]}) == True
 
     dutch_auction.finaliseAuction({'from': accounts[0]})
-
+    assert dutch_auction.finalised({'from': accounts[0]}) == True
+    
 
 def test_dutch_auction_claim_not_enough(dutch_auction):
     token_buyer = accounts[2]
@@ -95,13 +99,13 @@ def test_dutch_auction_claim_not_enough(dutch_auction):
 
 
 
-def test_dutch_auction_auctionPrice(dutch_auction):
+def test_dutch_auction_clearingPrice(dutch_auction):
     rpc.sleep(100)
     rpc.mine()
-    assert dutch_auction.auctionPrice() <= AUCTION_START_PRICE
-    assert dutch_auction.auctionPrice() > AUCTION_RESERVE
+    assert dutch_auction.clearingPrice() <= AUCTION_START_PRICE
+    assert dutch_auction.clearingPrice() > AUCTION_RESERVE
 
     rpc.sleep(AUCTION_TIME)
     rpc.mine()
-    assert dutch_auction.auctionPrice() == AUCTION_RESERVE
+    assert dutch_auction.clearingPrice() == AUCTION_RESERVE
 

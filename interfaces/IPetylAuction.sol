@@ -8,6 +8,7 @@ pragma solidity ^0.6.9;
 interface IPetylAuction {
 
     function initDutchAuction (
+            address _funder,
             address _token,
             uint256 _tokenSupply,
             uint256 _startDate,
