@@ -240,6 +240,7 @@ def _commitTokensFrom(_from: address, _amount: uint256):
 
 @external
 @payable
+@nonreentrant("lock")
 def __default__():
     """
     @notice Buy Tokens by committing ETH to this contract address 
@@ -249,6 +250,7 @@ def __default__():
 
 @external
 @payable
+@nonreentrant("lock")
 def commitEth(_from: address):
     """
     @notice Commit ETH to buy tokens on sale
@@ -257,6 +259,7 @@ def commitEth(_from: address):
 
 
 @external
+@nonreentrant("lock")
 def commitTokens(_amount: uint256):
     """
     @notice Commit approved ERC20 tokens to buy tokens on sale
@@ -282,6 +285,7 @@ def _tokenPayment(_token: address, _to: address, _amount: uint256):
 
 @external
 @payable
+@nonreentrant("lock")
 def finaliseAuction():
     """
     @notice Auction finishes successfully above the reserve
@@ -304,6 +308,7 @@ def finaliseAuction():
 
 @external
 @payable
+@nonreentrant("lock")
 def withdrawTokens():
     """
     @notice Withdraw your tokens once the Auction has ended.
