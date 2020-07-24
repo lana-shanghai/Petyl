@@ -297,8 +297,8 @@ def auction_token(PetylBaseToken, petyl_factory):
 
 
 @pytest.fixture(scope='module', autouse=True)
-def dutch_auction_template(PetylDutchAuction):
-    dutch_auction_template = PetylDutchAuction.deploy({'from': accounts[0]})
+def dutch_auction_template(VPetylDutchAuction):
+    dutch_auction_template = VPetylDutchAuction.deploy({'from': accounts[0]})
     return dutch_auction_template
 
 
